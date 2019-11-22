@@ -20,4 +20,4 @@
 .history/*
 
 
-/db/dbinfo.inc
+db/dbinfo.inc

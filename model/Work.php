@@ -25,9 +25,9 @@ class Work
      * @param string $retireFlag
      * @param string $status
      */
-    public function __construct( $title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="", $status="")
+    public function __construct($wid, $title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="", $status="")
     {
-//        $this->wid = $wid;
+        $this->wid = $wid;
         $this->title = $title;
         $this->authorName = $authorName;
         $this->url = $url;

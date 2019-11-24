@@ -12,21 +12,14 @@ require_once "model/Reviewer.php";
 require_once "db/DBReviewerUtil.php";
 
 
-if ($_GET['reviewerList']) {
-    DBWorkUtil::selectAllReviewers();
 
-} elseif ($_POST['deleteReviewer']) {
-
-}elseif ($_POST['updateReviewer']) {
-
-}
-
-DBReviewerUtil::selectAllReviewers();
+//echo json_encode(DBReviewerUtil::selectAllReviewers());
 
 // testing functionality for reviewer part
-//$r = new Reviewer("insert", "123", "insert", "academic", 1);
+//$r = new Reviewer("insert111", "123", "insert", "1", 1);
+//echo $r;
 //DBReviewerUtil::selectAllReviewers();
-//DBReviewerUtil::insertReviewer($r);
+//DBReviewerUtil::createReviewer($r);
 //DBReviewerUtil::deleteReviewer($r);
 
 ?>

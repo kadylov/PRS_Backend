@@ -9,8 +9,8 @@ class Reviewer extends User{
 
     private $rid;
     private $name;
-    private $credential;
-    private $roleId;
+    private $credentialID;
+    private $roleId ;
 
     /**
      * Reviewer constructor.
@@ -23,8 +23,8 @@ class Reviewer extends User{
         parent::__construct($username, $password);
 //        $this->rid = $rid;
         $this->name = $name;
-        $this->credential = $credential;
-        $this->roleId = $roleId;
+        $this->credentialID = (int) $credential;
+        $this->roleId = (int) $roleId;
     }
 
     /**
@@ -58,15 +58,15 @@ class Reviewer extends User{
     /**
      * @return mixed
      */
-    public function getCredential() {
-        return $this->credential;
+    public function getCredentialID() {
+        return $this->credentialID;
     }
 
     /**
      * @param mixed $credential
      */
-    public function setCredential($credential): void {
-        $this->credential = $credential;
+    public function setCredential($credentialID): void {
+        $this->credentialID = $credentialID;
     }
 
     /**
@@ -84,8 +84,17 @@ class Reviewer extends User{
     }
 
 
-    public function toString(){
-//        $desc = $this->$this->getName()
+    public function __toString(){
+        {
+            try
+            {
+                return "\nReviewer\nUsername: " . (string)$this->getUsername() . "\nPassword: ". (string)$this->getUsername() . "\nName: ". (string)$this->name . "\ncredentialID: " . (string)$this->credentialID . "\nRoleID: " . (string)$this->roleId ."\n";
+            }
+            catch (Exception $exception)
+            {
+                return 'Error in Reviewer:toString';
+            }
+        }
     }
 
 

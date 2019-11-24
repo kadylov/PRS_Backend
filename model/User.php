@@ -45,7 +45,7 @@ abstract class User {
 
 
 
-    abstract function toString();
+    abstract public function __toString();
 }
 
 ?>

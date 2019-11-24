@@ -44,7 +44,7 @@ class DBWorkUtil {
             $stmt->execute();
             $result = $stmt->get_result();
 
-            if($result!==FALSE)
+            if ($result !== FALSE)
                 $result = $result->fetch_all(MYSQLI_ASSOC);
 
             echo "Records inserted successfully.";
@@ -61,20 +61,50 @@ class DBWorkUtil {
 
     }
 
+    public static function findWork(Work $work) {
+
+        $id = (int)$work.getWid();
+        echo "\n findWork ID =  $id\n";
+        $found = false;
+
+        $conn = connect();
+        if ($conn->connect_error) {
+            die("Connection failed: ".$conn->connect_error);
+        }
+
+        $result = $conn->query('SELECT * FROM peer_review_db.Work where $id ;');
+        if ($result > 0) {
+            $found = true;
+        }
+        $conn->close();
+
+        return $found;
+    }
 
     public static function deleteWork(Work $work) {
-        // Attempt delete query execution
-        $id = $work->getWid();
+
+        $flag = true;
+        $id = (int)$work->getWid();
+
+        if ($id == null || $id == 0)
+            return false;
+
+        echo "\nDELETE id = $id \n";
+
         $sql = "DELETE FROM peer_review_db.Work WHERE WID='$id'";
 
         $conn = connect();
+
+        // Attempt delete query execution
         if ($conn->query($sql) === true) {
             echo "Work was deleted successfully.";
+            $flag = false;
         } else {
             echo "ERROR: Could not able to execute $sql. ".$conn->error;
         }
 
         $conn->close();
+        return $flag;
     }
 
 

@@ -4,15 +4,13 @@ require_once 'dbinfo.inc';
 
 require_once 'model/Work.php';
 
-
-class DBWorkUtil {
+class DBWork {
 
     //WID, Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, Tag, RSID
 
     static public function selectAllWorks() {
 
         $conn = connect();
-
         $result = $conn->query('SELECT * FROM peer_review_db.Work;');
 
         $works = $result->fetch_all(MYSQLI_ASSOC);
@@ -97,7 +95,7 @@ class DBWorkUtil {
 
         // Attempt delete query execution
         if ($conn->query($sql) === true) {
-            echo "Work was deleted successfully.";
+            echo "Work.class was deleted successfully.";
             $flag = false;
         } else {
             echo "ERROR: Could not able to execute $sql. ".$conn->error;

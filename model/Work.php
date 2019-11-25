@@ -14,7 +14,7 @@ class Work
     private $status="";
 
     /**
-     * Work constructor.
+     * Work.class constructor.
      * @param int $wid
      * @param string $title
      * @param string $authorName
@@ -25,7 +25,7 @@ class Work
      * @param string $retireFlag
      * @param string $status
      */
-    public function __construct($wid, $title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="", $status="")
+    public function __construct($wid, $title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="no", $status="new")
     {
         $this->wid = $wid;
         $this->title = $title;
@@ -182,3 +182,4 @@ class Work
         $this->status = $status;
     }
 }
+?>

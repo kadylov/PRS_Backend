@@ -4,27 +4,27 @@
 require_once 'User.php';
 
 
-class Reviewer extends User{
+class Reviewer extends User {
     //        RID, Username, Password, RName, RCredential, RoleId
 
     private $rid;
     private $name;
     private $credentialID;
-    private $roleId ;
+    private $roleId;
 
     /**
-     * Reviewer constructor.
+     * Reviewer.class constructor.
      * @param $rid
      * @param $name
      * @param $credential
      * @param $roleId
      */
-    public function __construct( $username, $password, $name, $credential, $roleId) {
+    public function __construct($username, $password, $name, $credential, $roleId) {
         parent::__construct($username, $password);
 //        $this->rid = $rid;
         $this->name = $name;
-        $this->credentialID = (int) $credential;
-        $this->roleId = (int) $roleId;
+        $this->credentialID = (int)$credential;
+        $this->roleId = (int)$roleId;
     }
 
     /**
@@ -84,16 +84,11 @@ class Reviewer extends User{
     }
 
 
-    public function __toString(){
-        {
-            try
-            {
-                return "\nReviewer\nUsername: " . (string)$this->getUsername() . "\nPassword: ". (string)$this->getUsername() . "\nName: ". (string)$this->name . "\ncredentialID: " . (string)$this->credentialID . "\nRoleID: " . (string)$this->roleId ."\n";
-            }
-            catch (Exception $exception)
-            {
-                return 'Error in Reviewer:toString';
-            }
+    public function __toString() {
+        try {
+            return "\nReviewer.class\nUsername: ".(string)$this->getUsername()."\nPassword: ".(string)$this->getUsername()."\nName: ".(string)$this->name."\ncredentialID: ".(string)$this->credentialID."\nRoleID: ".(string)$this->roleId."\n";
+        } catch (Exception $exception) {
+            return 'Error in Reviewer.class:toString';
         }
     }
 

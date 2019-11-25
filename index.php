@@ -7,22 +7,22 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header("Content-Type: application/json; charset=UTF-8");
 
 
-require_once "model/Work.php";
-require_once "model/Reviewer.php";
+require_once "model/Work.class.php";
+require_once "model/Reviewer.class.php";
 
-require_once "db/DBWorkUtil.php";
-require_once "db/DBReviewerUtil.php";
+require_once "db/DBWork.php";
+require_once "db/DBReviewer.php";
 
 //var_dump($_GET);
 //var_dump($_POST);
 //var_dump($_POST['workID']);
 if ($_GET['scoredWorks']) {
-    DBWorkUtil::selectAllWorks();
+    DBWork::selectAllWorks();
 }
 
 elseif ($_POST['deleteWork']) {
     $workID = $_POST['workID'];
-    if (DBWorkUtil::deleteWork(new Work($workID)) == true)
+    if (DBWork::deleteWork(new Work($workID)) == true)
         http_response_code(202);
     else
         http_response_code(404);
@@ -30,14 +30,14 @@ elseif ($_POST['deleteWork']) {
 }
 
 
-#$work = new Work(1);
-//DBWorkUtil::deleteWork($work);
+#$work = new Work.class(1);
+//DBWork::deleteWork($work);
 
 
 // testing functionality for reviewer part
-//$r = new Reviewer("insert", "123", "insert", "academic", 1);
-//DBReviewerUtil::selectAllReviewers();
-//DBReviewerUtil::insertReviewer($r);
-//DBReviewerUtil::deleteReviewer($r);
+//$r = new Reviewer.class("insert", "123", "insert", "academic", 1);
+//DBReviewer::selectAllReviewers();
+//DBReviewer::insertReviewer($r);
+//DBReviewer::deleteReviewer($r);
 
 ?>

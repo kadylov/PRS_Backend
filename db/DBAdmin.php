@@ -248,6 +248,61 @@ class DBAdmin {
 
     }
 
+    public static function getReviewersToAssign() {
+        $query = "SELECT * FROM peer_review_db.ReviewsCountList";
+
+        $conn = connect();
+        $result = $conn->query($query);
+        $reviewers = array();
+        if ($result) {
+            if ($result->num_rows > 0) {
+                $reviewers = $result->fetch_all(MYSQLI_ASSOC);
+            }
+        }
+        $conn->close();
+        return $reviewers;
+
+    }
+
+    public static function getAssignedWorks() {
+        $query = "SELECT * FROM peer_review_db.Assignment;";
+
+        $conn = connect();
+        $result = $conn->query($query);
+        $assignment = array();
+        if ($result) {
+            if ($result->num_rows > 0) {
+                $assignment = $result->fetch_all(MYSQLI_ASSOC);
+            }
+        }
+
+
+        $conn->close();
+        return $assignment;
+
+    }
+
+    public static function getAssignedReviewers($WorkID) {
+
+        $query = "SELECT * FROM peer_review_db.ReviewersListView
+                    where RID in (select Assignment.ReviewerID from peer_review_db.Assignment where WorkID='$WorkID')";
+
+//        echo "\n$query\n";
+        $conn = connect();
+        $result = $conn->query($query);
+        $reviewers = array();
+        if ($result) {
+            if ($result->num_rows > 0) {
+                $reviewers = $result->fetch_all(MYSQLI_ASSOC);
+            }
+        }
+
+
+        $conn->close();
+        return $reviewers;
+
+    }
+
 
 }
 

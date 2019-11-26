@@ -7,8 +7,8 @@ header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 header("Content-Type: application/json; charset=UTF-8");
 
 
-require_once "model/Work.class.php";
-require_once "model/Reviewer.class.php";
+require_once "model/Work.php";
+require_once "model/Reviewer.php";
 
 require_once "db/DBWork.php";
 require_once "db/DBReviewer.php";

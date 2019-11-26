@@ -15,12 +15,12 @@ if (isset($_GET['incommingWorks'])) {
 
 } elseif (isset($_POST['adminReview'])) {
     echo "\npostAdminReviewRequest\n";
-
+//    var_dump($_POST);
 //    dbAdmin_Review columns: AdminID, WorkID, DateReviewed, Decision, RejectNote
 //    $ar = new AdminReview($_POST("AdminID"), $_POST("WorkID"), $_POST("DateReviewed"), $_POST("Decision"), $_POST("RejectNote"));
 //    echo "\npostAdminReviewRequest\n";
 
-    $ar = new AdminReview(1, 4, "20191212", "accepted", "");
+    $ar = new AdminReview($_POST['AdminID'], $_POST['WorkID'], $_POST['DateReviewed'], $_POST['Decision'], $_POST['RejectNote']);
     DBAdmin::updateReview($ar);
 
 } elseif (isset($_GET['reviewerList'])) {
@@ -61,19 +61,45 @@ if (isset($_GET['incommingWorks'])) {
 
     // responds back with all admin's pre review history in json format
 } elseif (isset($_GET['adminReviews'])) {
-    echo "\nrejectedWorkRequest\n";
+    echo "\nadminReviewsRequest\n";
 
-    $works = DBAdmin::getAdminReviews($_GET['adminID']);
-    echo json_encode($works);
+    $reviews = DBAdmin::getAdminReviews($_GET['adminID']);
+    echo json_encode($reviews);
 
-  // responds back with all unassigned works in json format
+    // responds back with all unassigned works in json format
 } elseif (isset($_GET['unassignedWorks'])) {
     echo "\nunassignedWorksRequest\n";
 
     $works = DBAdmin::getUnassignedWorks();
     echo json_encode($works);
-}
 
+
+} elseif (isset($_GET['reviewersToAssign'])) {
+    echo "\nreviewHistoryRequest\n";
+
+    $reviewers = DBAdmin::getReviewersToAssign();
+    echo json_encode($reviewers);
+} elseif (isset($_GET['getAssignedWorks'])) {
+    echo "\ngetAssignedWorks\n";
+
+    $assignment = DBAdmin::getAssignedWorks();
+    echo json_encode($assignment);
+} elseif (isset($_GET['getAssignedReviewers'])) {
+    echo "\ngetAssignedReviewers\n";
+
+    $reviewers = DBAdmin::getAssignedReviewers($_GET['WorkID']);
+    echo json_encode($reviewers);
+}
+elseif (isset($_POST['assignReviewers'])) {
+    echo "\nassignReviewers\n";
+
+    echo json_decode($_POST['reviewerIDs']);
+//    var_dump($_POST);
+
+
+//    $reviewers = DBAdmin::assignReviewers($_GET['WorkID']);
+//    echo json_encode($reviewers);
+}
 //
 //$incommingWorks = DBAdmin::selectAllIncommingWorks();
 //echo json_encode($incommingWorks);
@@ -81,6 +107,5 @@ if (isset($_GET['incommingWorks'])) {
 //$rw = new Reviewer.class("qqqqq", "qqqq", "qqqqqq", 1, 2);
 //$rw->setRid(23);
 //DBAdmin::updateReviewer($rw);
-
 
 ?>

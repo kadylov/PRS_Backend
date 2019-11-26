@@ -2,7 +2,7 @@
 
 require_once 'dbinfo.inc';
 
-require_once 'model/Work.php';
+//require_once './model/Work.php';
 
 class DBWork {
 

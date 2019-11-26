@@ -16,11 +16,11 @@ require_once "db/DBReviewer.php";
 //var_dump($_GET);
 //var_dump($_POST);
 //var_dump($_POST['workID']);
-if ($_GET['scoredWorks']) {
+if (isset($_GET['scoredWorks'])) {
     DBWork::selectAllWorks();
 }
 
-elseif ($_POST['deleteWork']) {
+elseif (isset($_POST['deleteWork'])) {
     $workID = $_POST['workID'];
     if (DBWork::deleteWork(new Work($workID)) == true)
         http_response_code(202);

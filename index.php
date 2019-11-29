@@ -18,14 +18,29 @@ require_once "db/DBReviewer.php";
 //var_dump($_POST['workID']);
 if (isset($_GET['scoredWorks'])) {
     DBWork::selectAllWorks();
-}
+} elseif (isset($_POST['userLogin'])) {
+//    var_dump($_POST);
+//    echo "\nuserLoginRequest\n";
 
-elseif (isset($_POST['deleteWork'])) {
-    $workID = $_POST['workID'];
-    if (DBWork::deleteWork(new Work($workID)) == true)
-        http_response_code(202);
-    else
-        http_response_code(404);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $conn = connect();
+    if (!$conn) {
+        die("Error! cannot connect");
+    }
+    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
+
+
+    $user = $result->fetch_all(MYSQLI_ASSOC);
+    $conn->close();
+    echo json_encode($user);
+
+
+//    if (DBWork::deleteWork(new Work($workID)) == true)
+//        http_response_code(202);
+//    else
+//        http_response_code(404);
 
 }
 

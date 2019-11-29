@@ -86,7 +86,7 @@ class Reviewer extends User {
 
     public function __toString() {
         try {
-            return "\nReviewer.class\nUsername: ".(string)$this->getUsername()."\nPassword: ".(string)$this->getUsername()."\nName: ".(string)$this->name."\ncredentialID: ".(string)$this->credentialID."\nRoleID: ".(string)$this->roleId."\n";
+            return "\nReviewer\nUsername: ".(string)$this->getUsername()."\nPassword: ".(string)$this->getUsername()."\nName: ".(string)$this->name."\ncredentialID: ".(string)$this->credentialID."\nRoleID: ".(string)$this->roleId."\n";
         } catch (Exception $exception) {
             return 'Error in Reviewer.class:toString';
         }

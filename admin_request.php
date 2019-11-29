@@ -60,6 +60,7 @@ if (isset($_GET['incommingWorks'])) {
     echo json_encode($works);
 
     // responds back with all admin's pre review history in json format
+    // receives adminID as a parameter from http get request
 } elseif (isset($_GET['adminReviews'])) {
     echo "\nadminReviewsRequest\n";
 
@@ -89,16 +90,21 @@ if (isset($_GET['incommingWorks'])) {
 
     $reviewers = DBAdmin::getAssignedReviewers($_GET['WorkID']);
     echo json_encode($reviewers);
-}
-elseif (isset($_POST['assignReviewers'])) {
+} elseif (isset($_POST['assignReviewers'])) {
     echo "\nassignReviewers\n";
 
-    echo json_decode($_POST['reviewerIDs']);
+//    $reviewerIDs= $_POST['reviewerIDs'];
+
+    $assignment = $_POST['assignment'];
+    echo json_decode($assignment);
+
 //    var_dump($_POST);
+//    if (!is_array($reviewerIDs)) {
+//        $reviewerIDs = array("RID"=>$reviewerIDs);
+//    }
 
-
-//    $reviewers = DBAdmin::assignReviewers($_GET['WorkID']);
-//    echo json_encode($reviewers);
+//    $newAssignment = new Assignment($reviewerIDs)
+//    DBAdmin::assignReviewers($reviewerIDs, $_POST['WorkID']);
 }
 //
 //$incommingWorks = DBAdmin::selectAllIncommingWorks();

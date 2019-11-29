@@ -303,6 +303,48 @@ class DBAdmin {
 
     }
 
+    public static function assignReviewers($reviewerIDs, $workID) {
+        if ($workID == 0 || $workID == '') {
+            die("\nError! work id cannot be zero or empty\n");
+        }
+
+
+
+        // check whether reviewerIDs is an array
+        if (is_array($reviewerIDs)) {
+
+            if (in_array("0", $reviewerIDs)) {
+                die("\nError! reviewer ID cannot be zero\n");
+            }
+
+            foreach ($reviewerIDs as $rid){
+
+            }
+        }
+
+//        AdminID, ReviewerID, WorkID, DateAssigned, DueDate
+        $conn = connect();
+        $query = "INSERT INTO peer_review_db.Reviewer (ReviewerID, WorkID, DateAssigned, DueDate, RoleId) VALUES(?,?,?,?,?); ";
+        $stmt = $conn->prepare($query);
+
+
+        $stmt->bind_param("sssss", $username, $password, $reviewerName, $credential, $roleType);
+        if (!$stmt->execute()) {
+            die($stmt->error);
+        }
+
+        echo "Records inserted successfully.";
+
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+
+
+
+    }
+
 
 }
 

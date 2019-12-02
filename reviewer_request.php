@@ -6,13 +6,17 @@ require_once "model/Reviewer.php";
 require_once "model/Scorecard.php";
 
 require_once "db/DBReviewer.php";
+require_once "db/DB.php";
 
+if (isset($_GET['listAssignments'])) {
+//    echo "\nreviewerAssignmentRequest\n";
 
-if (isset($_GET['reviewerAssignment'])) {
-    echo "\nreviewerAssignmentRequest\n";
+    if (isset($_GET['ReviewerID'])) {
 
-    $assignedWorks = DBReviewer::getAllAsignments();
-    echo json_encode($assignedWorks);
+        $reviewerID = $_GET['ReviewerID'];
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=$reviewerID;"));
+    }
+
 
 } elseif (isset($_GET['scorecard'])) {
 //    echo "\nscorecardRequest: ".$_GET['WID'];
@@ -21,31 +25,22 @@ if (isset($_GET['reviewerAssignment'])) {
     echo json_encode($scorecard);
 
 } elseif (isset($_GET['reviewHistory'])) {
-
 //    echo "\nreviewHistory\n";
     echo json_encode(DBReviewer::getReviewHistory($_GET["ReviewerID"]));
-
-//    if (DBWork::deleteWork(new Work.class($workID)) == true)
-//        http_response_code(202);
-//    else
-//        http_response_code(404);
 
 } elseif (isset($_GET['getDiscussions'])) {
     echo "\ngetDiscussionsRequest\n";
 
     json_encode(DBReviewer::getDiscussionHistory($_GET["WorkID"]));
 
-
 } elseif (isset($_POST['saveDiscusion'])) {
 
     echo "\nsaveDiscusionRequest\n";
 
     DBReviewer($_POST["RID"]);
-}
+} elseif (isset($_GET['getRubric'])) {
 
-elseif (isset($_GET['getRubric'])) {
-
-    // respond the request back with all rurbric texts in json format
+    // respond the request back with all rubric texts in json format
     echo json_encode(DBReviewer::getRubricText());
 }
 
@@ -72,5 +67,8 @@ elseif (isset($_GET['getRubric'])) {
 
 //$rb=DBReviewer::getRubricText();
 //print_r($rb);
+
+//echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=1"));
+
 
 ?>

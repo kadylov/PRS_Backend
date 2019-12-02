@@ -17,10 +17,10 @@ class Assignment {
      * @param $dateAssigned
      * @param $dueDate
      */
-    public function __construct($adminID, $reviewerIDs, $workID, $dateAssigned, $dueDate) {
-        $this->adminID = $adminID;
-        $this->reviewerIDs = reviewerIDs;
-        $this->workID = $workID;
+    public function __construct($adminID, $reviewerID, $workID, $dateAssigned = "000000", $dueDate = "000000") {
+        $this->setAdminID($adminID);
+        $this->setReviewerID(reviewerID);
+        $this->setWorkID($workID);
         $this->dateAssigned = $dateAssigned;
         $this->dueDate = $dueDate;
     }
@@ -36,6 +36,9 @@ class Assignment {
      * @param mixed $adminID
      */
     public function setAdminID($adminID): void {
+        if ($adminID == 0 || $adminID == '') {
+            die("\nError! reviewer id cannot be zero or empty\n");
+        }
         $this->adminID = $adminID;
     }
 
@@ -49,8 +52,11 @@ class Assignment {
     /**
      * @param mixed reviewerIDs
      */
-    public function setReviewerID($reviewerIDs): void {
-        $this->reviewerIDs = reviewerIDs;
+    public function setReviewerID($reviewerID): void {
+        if ($reviewerID == 0 || $reviewerID == '') {
+            die("\nError! reviewerID cannot be zero or empty\n");
+        }
+        $this->$reviewerID = $reviewerID;
     }
 
     /**
@@ -64,6 +70,10 @@ class Assignment {
      * @param mixed $workID
      */
     public function setWorkID($workID): void {
+        if ($workID == 0 || $workID == '') {
+            die("\nError! work id cannot be zero or empty\n");
+        }
+
         $this->workID = $workID;
     }
 

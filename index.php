@@ -12,30 +12,24 @@ require_once "model/Reviewer.php";
 
 require_once "db/DBWork.php";
 require_once "db/DBReviewer.php";
+require_once "db/DB.php";
 
 //var_dump($_GET);
 //var_dump($_POST);
 //var_dump($_POST['workID']);
 if (isset($_GET['scoredWorks'])) {
-    DBWork::selectAllWorks();
-} elseif (isset($_POST['userLogin'])) {
-//    var_dump($_POST);
-//    echo "\nuserLoginRequest\n";
 
-    $username = $_POST['username'];
+    $works = DB::select('SELECT * FROM peer_review_db.Work;');
+    echo json_encode($works);
+
+} elseif (isset($_POST['userLogin'])) {
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $conn = connect();
-    if (!$conn) {
-        die("Error! cannot connect");
-    }
-    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
-
-
-    $user = $result->fetch_all(MYSQLI_ASSOC);
-    $conn->close();
+//    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
+    $query="SELECT * FROM peer_review_db.UsersVIew where email='$email' and Password='$password';";
+    $user = DB::select($query);
     echo json_encode($user);
-
 
 //    if (DBWork::deleteWork(new Work($workID)) == true)
 //        http_response_code(202);

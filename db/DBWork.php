@@ -10,13 +10,7 @@ class DBWork {
 
     static public function selectAllWorks() {
 
-        $conn = connect();
-        $result = $conn->query('SELECT * FROM peer_review_db.Work;');
-
-        $works = $result->fetch_all(MYSQLI_ASSOC);
-        echo json_encode($works);
-        mysqli_close($conn);
-
+        $works = DB::select('SELECT * FROM peer_review_db.Work;');
         return $works;
 
     }

@@ -1,14 +1,11 @@
 <?php
 
-//require_once 'dbinfo.inc';
 require_once 'dbinfo.inc';
-
-//require_once 'model/Reviewer.php';
-
 
 class DBReviewer {
 
     public static function getAllAsignments() {
+
     }
 
     public static function getScorecard($workID, $reviewerID) {
@@ -108,7 +105,7 @@ class DBReviewer {
         $result = $conn->query($query);
         if (!$result)
             die("\nErrormessage:".$conn->error);
-        
+
         $discussion = array();
         if ($result->num_rows > 0) {
             $discussion = $result->fetch_all(MYSQLI_ASSOC);

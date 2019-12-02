@@ -2,73 +2,6 @@
 
 
 class DBAdmin {
-    static public function getAllIncommingWorks() {
-
-        $conn = connect();
-        $reviewers = array();
-
-        $result = $conn->query('SELECT * FROM peer_review_db.Work WHERE Status="new";');
-        if (!$result) {
-            printf("Errormessage: %s\n", $conn->error);
-        } elseif ($result->num_rows > 0) {
-            $reviewers = $result->fetch_all(MYSQLI_ASSOC);
-        }
-
-
-        $conn->close();
-        return $reviewers;
-
-    }
-
-    static public function getRejectedWorks() {
-
-        $conn = connect();
-        $result = $conn->query('SELECT * FROM peer_review_db.RejectedWorkView;');
-
-        $works = "";
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $works = $result->fetch_all(MYSQLI_ASSOC);
-            }
-        }
-        $conn->close();
-        return $works;
-
-    }
-
-    static public function getUnassignedWorks() {
-
-        $conn = connect();
-        $result = $conn->query('SELECT * FROM peer_review_db.Work WHERE Status="admitted";');
-
-        $works = "";
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $works = $result->fetch_all(MYSQLI_ASSOC);
-            }
-        }
-        $conn->close();
-        return $works;
-
-    }
-
-    //WID, Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, Tag, RSID
-
-    static public function getAllReviewers() {
-
-        $conn = connect();
-
-        $result = $conn->query('SELECT * FROM peer_review_db.ReviewersListView;');
-        $reviewers = array();
-        if ($result->num_rows > 0) {
-            $reviewers = $result->fetch_all(MYSQLI_ASSOC);
-        }
-
-        mysqli_close($conn);
-        return $reviewers;
-
-    }
-
 
     static public function createReviewer(Reviewer $newReviewer) {
 
@@ -142,25 +75,6 @@ class DBAdmin {
         $conn->close();
     }
 
-
-    public static function deleteReviewer(Reviewer $reviewer) {
-        // Attempt delete query execution
-        $username = $reviewer->getUsername();
-        $password = $reviewer->getPassword();
-        $name = $reviewer->getName();
-
-        $sql = "DELETE FROM peer_review_db.Reviewer WHERE Username='$username' AND Password='$password' AND RName='$name';";
-
-        $conn = connect();
-        if ($conn->query($sql) === true) {
-            echo "Reviewer.class was deleted successfully.";
-        } else {
-            die("ERROR: Could not able to execute $sql. ".$conn->error);
-        }
-
-        $conn->close();
-    }
-
     public static function deleteReviewerByID($id) {
 
         if ($id == 0) {
@@ -199,7 +113,7 @@ class DBAdmin {
     }
 
     // stores admin's pre-review in the table Admin_Review
-    public static function updateReview(AdminReview $adminReview) {
+    public static function preReview(AdminReview $adminReview) {
         echo "\n$adminReview\n";
 
         $adminId = $adminReview->getAdminID();
@@ -224,7 +138,7 @@ class DBAdmin {
         if (!$stmt->execute()) {
             die($stmt->error);
         }
-        echo "Records inserted successfully.";
+//        echo "Records inserted successfully.";
 
 
         $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?;";
@@ -237,98 +151,39 @@ class DBAdmin {
             die($stmt->error);
         }
 
-        echo "Records updated successfully.";
-
         // close statement
         $stmt->close();
 
         // close connection
         $conn->close();
 
+//        echo "Records updated successfully.";
+
+        http_response_code(202);
+    }
+
+    public static function getAllMessages($workID){
+        if($workID==0 || $workID=="" || $workID==null)
+            die("Error! work id cannot be zero or null");
+
+
 
     }
 
-    public static function getReviewersToAssign() {
-        $query = "SELECT * FROM peer_review_db.ReviewsCountList";
+    public static function newAssignment(Assignment $assignment) {
 
-        $conn = connect();
-        $result = $conn->query($query);
-        $reviewers = array();
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $reviewers = $result->fetch_all(MYSQLI_ASSOC);
-            }
-        }
-        $conn->close();
-        return $reviewers;
-
-    }
-
-    public static function getAssignedWorks() {
-        $query = "SELECT * FROM peer_review_db.Assignment;";
-
-        $conn = connect();
-        $result = $conn->query($query);
-        $assignment = array();
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $assignment = $result->fetch_all(MYSQLI_ASSOC);
-            }
-        }
-
-
-        $conn->close();
-        return $assignment;
-
-    }
-
-    public static function getAssignedReviewers($WorkID) {
-
-        $query = "SELECT * FROM peer_review_db.ReviewersListView
-                    where RID in (select Assignment.ReviewerID from peer_review_db.Assignment where WorkID='$WorkID')";
-
-//        echo "\n$query\n";
-        $conn = connect();
-        $result = $conn->query($query);
-        $reviewers = array();
-        if ($result) {
-            if ($result->num_rows > 0) {
-                $reviewers = $result->fetch_all(MYSQLI_ASSOC);
-            }
-        }
-
-
-        $conn->close();
-        return $reviewers;
-
-    }
-
-    public static function assignReviewers($reviewerIDs, $workID) {
-        if ($workID == 0 || $workID == '') {
-            die("\nError! work id cannot be zero or empty\n");
-        }
-
-
-
-        // check whether reviewerIDs is an array
-        if (is_array($reviewerIDs)) {
-
-            if (in_array("0", $reviewerIDs)) {
-                die("\nError! reviewer ID cannot be zero\n");
-            }
-
-            foreach ($reviewerIDs as $rid){
-
-            }
-        }
+        $adminID = $assignment->getAdminID();
+        $reviewerID = $assignment->getReviewerID();
+        $DateAssigned = $assignment->getDateAssigned();
+        $DueDate = $assignment->getDueDate();
 
 //        AdminID, ReviewerID, WorkID, DateAssigned, DueDate
         $conn = connect();
-        $query = "INSERT INTO peer_review_db.Reviewer (ReviewerID, WorkID, DateAssigned, DueDate, RoleId) VALUES(?,?,?,?,?); ";
+        $query = "INSERT INTO peer_review_db.Assignment (AdminID, ReviewerID, WorkID, DateAssigned, DueDate) VALUES(?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
 
-        $stmt->bind_param("sssss", $username, $password, $reviewerName, $credential, $roleType);
+        $stmt->bind_param("ssss", $adminID, $reviewerID, $WorkID, $DateAssigned, $DueDate);
         if (!$stmt->execute()) {
             die($stmt->error);
         }
@@ -341,7 +196,7 @@ class DBAdmin {
         // close connection
         $conn->close();
 
-
+//        http_response_code(202);
 
     }
 

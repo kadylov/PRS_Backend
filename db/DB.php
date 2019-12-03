@@ -13,7 +13,8 @@ class DB {
 
         elseif ($result->num_rows > 0) {
             $result = $result->fetch_all(MYSQLI_ASSOC);
-        }
+        } else
+            $result = null;
         $conn->close();
         return $result;
 

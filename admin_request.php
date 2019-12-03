@@ -4,6 +4,7 @@ require_once "header_config.php";
 
 require_once "model/Reviewer.php";
 require_once "model/AdminReview.php";
+require_once "model/Assignment.php";
 
 require_once "db/DBReviewer.php";
 require_once "db/DBAdmin.php";
@@ -19,8 +20,8 @@ if (isset($_GET['incommingWorks'])) {
 } elseif (isset($_POST['adminReview'])) {
     echo "\npostAdminReviewRequest\n";
 
-    $ar = new AdminReview($_POST['AdminID'], $_POST['WorkID'], $_POST['DateReviewed'], $_POST['Decision'], $_POST['RejectNote']);
-    DBAdmin::preReview($ar);
+    $adminReview = new AdminReview($_POST['AdminID'], $_POST['WorkID'], $_POST['DateReviewed'], $_POST['Decision'], $_POST['RejectNote']);
+    DBAdmin::preReview($adminReview);
 
 } elseif (isset($_GET['reviewerList'])) {
     echo "\nreviewerListRequest\n";
@@ -113,10 +114,10 @@ if (isset($_GET['incommingWorks'])) {
     $reviewerID = $_POST['reviewerID'];
     $workID = $_POST['workID'];
     $adminID = $_POST['adminID'];
-    $adminID = $_POST['dueDate'];
-    $adminID = $_POST['dateAssigned'];
-    $assignment = new Assignment($adminID, $reviewerID, $workID);
-    DBAdmin::newAssignment($adminID, $reviewerID, $workID);
+    $dueDate = $_POST['dueDate'];
+    $dateAssigned = $_POST['dateAssigned'];
+    $assignment = new Assignment($adminID, $reviewerID, $workID,$dateAssigned,$dueDate);
+    DBAdmin::newAssignment($assignment);
 
 } elseif (isset($_POST['getDisscussion'])) {
     $workID = $_POST['workID'];
@@ -125,11 +126,5 @@ if (isset($_GET['incommingWorks'])) {
 
 
 }
-//
-//$incommingWorks = DBAdmin::selectAllIncommingWorks();
-//echo json_encode($incommingWorks);
 
-//$rw = new Reviewer.class("qqqqq", "qqqq", "qqqqqq", 1, 2);
-//$rw->setRid(23);
-//DBAdmin::updateReviewer($rw);
 ?>

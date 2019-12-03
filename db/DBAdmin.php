@@ -163,8 +163,8 @@ class DBAdmin {
     }
 
     public static function getAllMessages($workID){
-        if($workID==0 || $workID=="" || $workID==null)
-            die("Error! work id cannot be zero or null");
+        if(empty($workID))
+            die("Error! work id is undefined");
 
 
 

@@ -23,13 +23,14 @@ if (isset($_GET['scoredWorks'])) {
     echo json_encode($works);
 
 } elseif (isset($_POST['userLogin'])) {
-    $email = $_POST['email'];
+    $username = $_POST['username'];
     $password = $_POST['password'];
 
 //    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
-    $query="SELECT * FROM peer_review_db.UsersVIew where email='$email' and Password='$password';";
+    $query="SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';";
     $user = DB::select($query);
     echo json_encode($user);
+//    echo json_encode($user);
 
 //    if (DBWork::deleteWork(new Work($workID)) == true)
 //        http_response_code(202);
@@ -48,5 +49,4 @@ if (isset($_GET['scoredWorks'])) {
 //DBReviewer::selectAllReviewers();
 //DBReviewer::insertReviewer($r);
 //DBReviewer::deleteReviewer($r);
-
 ?>

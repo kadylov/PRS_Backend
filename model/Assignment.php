@@ -17,9 +17,9 @@ class Assignment {
      * @param $dateAssigned
      * @param $dueDate
      */
-    public function __construct($adminID, $reviewerID, $workID, $dateAssigned = "000000", $dueDate = "000000") {
+    public function __construct($adminID = NULL, $reviewerID = NULL, $workID = NULL, $dateAssigned = "000000", $dueDate = "000000") {
         $this->setAdminID($adminID);
-        $this->setReviewerID(reviewerID);
+        $this->setReviewerID($reviewerID);
         $this->setWorkID($workID);
         $this->dateAssigned = $dateAssigned;
         $this->dueDate = $dueDate;
@@ -36,8 +36,8 @@ class Assignment {
      * @param mixed $adminID
      */
     public function setAdminID($adminID): void {
-        if ($adminID == 0 || $adminID == '') {
-            die("\nError! reviewer id cannot be zero or empty\n");
+        if (empty($adminID) || !is_int($adminID)) {
+            die("\nError in Assignment.class! admin id cannot be zero or empty\n");
         }
         $this->adminID = $adminID;
     }
@@ -53,8 +53,8 @@ class Assignment {
      * @param mixed reviewerIDs
      */
     public function setReviewerID($reviewerID): void {
-        if ($reviewerID == 0 || $reviewerID == '') {
-            die("\nError! reviewerID cannot be zero or empty\n");
+        if (empty($reviewerID) || !is_int($reviewerID)) {
+            die("\nError in Assignment.class! reviewerID cannot be zero or empty\n");
         }
         $this->$reviewerID = $reviewerID;
     }
@@ -70,8 +70,9 @@ class Assignment {
      * @param mixed $workID
      */
     public function setWorkID($workID): void {
-        if ($workID == 0 || $workID == '') {
-            die("\nError! work id cannot be zero or empty\n");
+
+        if (empty($workID) || !is_int($workID)) {
+            die("\nError in Assignment.class! work id is undefined\n");
         }
 
         $this->workID = $workID;
@@ -109,6 +110,7 @@ class Assignment {
     public function __toString() {
         return "\nAssignment:\n adminID: $this->adminID \nReviewerID: $this->reviewerIDs\n workID: $this->workID\n dateAssigned: $this->dateAssigned\n Due date: $this->dueDate\n";
     }
+
 }
 
 ?>

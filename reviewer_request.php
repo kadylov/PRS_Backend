@@ -4,10 +4,25 @@ require_once "header_config.php";
 
 require_once "model/Reviewer.php";
 require_once "model/Scorecard.php";
+require_once "model/Message.php";
 
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
 
+    // receives http get request with params: listAssignments, ReviewerID
+    // responds back with all a list of assignments for the given reviewerID
+    // in json: [
+//    {
+//        "ReviewerID": "1",
+//        "RName": "Melissa Klein",
+//        "WorkID": "4",
+//        "Title": "Can you measure the ROI of your social media marketing?",
+//        "URL": "https://www.researchgate.net/publication/228237594_Can_You_Measure_the_ROI_of_Your_Social_Media_Marketing",
+//        "DateAssigned": "2019-11-12",
+//        "DueDate": "2019-11-14"
+//    }
+//      ........
+//]
 if (isset($_GET['listAssignments'])) {
 //    echo "\nreviewerAssignmentRequest\n";
 
@@ -17,58 +32,68 @@ if (isset($_GET['listAssignments'])) {
         echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=$reviewerID;"));
     }
 
-
+    // receives http get request with params: scorecard, WID, ReviewerID
+    // responds back with the current scorecard and scores that the reviewer has been scoring but
+    // did not finish it for workID
+    // in json: [
+//    {
+//        "WorkID": "",
+//        "Title": "",
+//        "URL": "",
+//        "RubricID": "",
+//        "RubricText": "",
+//        "Score": "",
+//        "RName": "",
+//        "RoleId": ""
+//        "RoleName": ""
+//    }
+//]
 } elseif (isset($_GET['scorecard'])) {
 //    echo "\nscorecardRequest: ".$_GET['WID'];
 
     $scorecard = DBReviewer::getScorecard($_GET["WID"], $_GET["ReviewerID"]);
     echo json_encode($scorecard);
 
+    // receives http get request with params: reviewHistory, ReviewerID
+    // responds back with all reviews made by reviewerID in
+    // JSON: ["WorkID": "4",
+    //        "ReviewerID": "2",
+    //        "RNAME": "Anton Swartz",
+    //        "DateReviewed": "2019-11-11",
+    //        "Score": "48",
+    //        "ReviewerComment": "Reviwer2's comment text"
+    //        ........
+    //]
 } elseif (isset($_GET['reviewHistory'])) {
 //    echo "\nreviewHistory\n";
-    echo json_encode(DBReviewer::getReviewHistory($_GET["ReviewerID"]));
+    if (isset($_GET['ReviewerID'])) {
+        $reviewerID = $_GET['ReviewerID'];
 
+       echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewHistoryView WHERE ReviewerID=2;"));
+    }
+
+
+    // receives http get request with params: getDiscussions, WorkID
+    // responds back with a list of messages of assigned reviewers by the given WorkID
 } elseif (isset($_GET['getDiscussions'])) {
     echo "\ngetDiscussionsRequest\n";
 
-    json_encode(DBReviewer::getDiscussionHistory($_GET["WorkID"]));
+    $WorkID = $_GET['WorkID'];
+    $discussions = DB::select("SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;");
+    echo json_encode($discussions);
 
-} elseif (isset($_POST['saveDiscusion'])) {
-
+    // receives http post request with params: saveMessage, reviewerID, WorkID, message, and date and time
+    // note that date and time format should be "YYYYMMDDhhmmss" or "YYYY-MM-DD HH:mm:SS"
+    // inserts a new message to Discussion table in db
+} elseif (isset($_POST['saveMessage'])) {
     echo "\nsaveDiscusionRequest\n";
 
-    DBReviewer($_POST["RID"]);
+    DBReviewer::insertNewMessage(new Message($_POST['$WorkID'], $_POST['$reviewerID'], $_POST['$message'], $_POST['$dateAndTime']));
+
 } elseif (isset($_GET['getRubric'])) {
 
     // respond the request back with all rubric texts in json format
     echo json_encode(DBReviewer::getRubricText());
 }
-
-//$incommingWorks = DBAdmin::selectAllIncommingWorks();
-//$aaa= json_encode($incommingWorks);
-
-//$rw = new Reviewer.class("qqqqq", "qqqq", "qqqqqq", 1, 2);
-//$rw->setRid(23);
-//DBAdmin::updateReviewer($rw);
-
-
-//echo json_encode(DBReviewer::selectAllReviewers());
-
-// testing functionality for reviewer part
-//$r = new Reviewer.class("insert111", "123", "insert", "1", 1);
-//echo $r;
-//DBReviewer::selectAllReviewers();
-//DBReviewer::createReviewer($r);
-//DBReviewer::deleteReviewer($r);
-
-
-//$scorecard = DBReviewer::getScorecard(4, 1);
-//echo json_encode($scorecard);
-
-//$rb=DBReviewer::getRubricText();
-//print_r($rb);
-
-//echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=1"));
-
 
 ?>

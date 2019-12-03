@@ -16,9 +16,9 @@ class AdminReview {
      * @param $decision
      * @param $rejectNote
      */
-    public function __construct($adminID, $workID, $dateReviewed, $decision = "", $rejectNote = "") {
-        $this->adminID = $adminID;
-        $this->workID = $workID;
+    public function __construct($adminID, $workID, $dateReviewed="", $decision = "", $rejectNote = "") {
+        $this->setAdminID($adminID);
+        $this->setWorkID($workID);
         $this->dateReviewed = $dateReviewed;
         $this->decision = $decision;
         $this->rejectNote = $rejectNote;
@@ -36,6 +36,9 @@ class AdminReview {
      * @param mixed $adminID
      */
     public function setAdminID($adminID): void {
+        if ($this->isEmpty($adminID)) {
+            die("\nError in AdminReview.class! adminID is undefined\n");
+        }
         $this->adminID = $adminID;
     }
 
@@ -50,6 +53,10 @@ class AdminReview {
      * @param mixed $workID
      */
     public function setWorkID($workID): void {
+        if ($this->isEmpty($workID)) {
+            die("\nError in AdminReview.class! workID is undefined\n");
+        }
+
         $this->workID = $workID;
     }
 
@@ -105,6 +112,10 @@ class AdminReview {
             }
         }
 
+    }
+
+    private function isEmpty($var) {
+        return ($var == 0 || $var === '' || $var === null);
     }
 }
 

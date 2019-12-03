@@ -4,10 +4,6 @@ require_once 'dbinfo.inc';
 
 class DBReviewer {
 
-    public static function getAllAsignments() {
-
-    }
-
     public static function getScorecard($workID, $reviewerID) {
         if ($workID == 0 || $workID == null || $workID == "") {
             die("\nError! Work id cannot be zero or null\n");
@@ -98,10 +94,11 @@ class DBReviewer {
         $conn = connect();
 
         if ($WorkID == 0 || $WorkID == null || $WorkID == "") {
-            die("\nError! reviewerID id cannot be zero or null\n");
+            die("\nError! WorkID id cannot be zero or null\n");
         }
 
         $query = "SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;";
+        echo $query;
         $result = $conn->query($query);
         if (!$result)
             die("\nErrormessage:".$conn->error);
@@ -114,6 +111,32 @@ class DBReviewer {
         $conn->close();
         return $discussion;
     }
+
+
+    public static function insertNewMessage(Message $msg) {
+
+        $conn = connect();
+        $query = "INSERT INTO peer_review_db.Discussion (WorkID, ReviewerID, Message, DTime) VALUES(?,?,?,?); ";
+        $stmt = $conn->prepare($query);
+
+
+        $stmt->bind_param("ssss", $msg->getWorkID(),$msg->getReviewerID(),$msg->getMessage(),$msg->getDateAndTime());
+        if (!$stmt->execute()) {
+            die($stmt->error);
+        }
+
+        echo "Records inserted successfully.";
+
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+
+//        http_response_code(202);
+
+    }
+
 }
 
 ?>

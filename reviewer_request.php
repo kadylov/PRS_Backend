@@ -10,7 +10,7 @@ require_once "db/DBReviewer.php";
 require_once "db/DB.php";
 
     // receives http get request with params: listAssignments, ReviewerID
-    // responds back with all a list of assignments for the given reviewerID
+    // responds back with a list of assignments for the given reviewerID
     // in json: [
 //    {
 //        "ReviewerID": "1",
@@ -74,13 +74,32 @@ if (isset($_GET['listAssignments'])) {
 
 
     // receives http get request with params: getDiscussions, WorkID
-    // responds back with a list of messages of assigned reviewers by the given WorkID
+    // responds back with all discussions made by assigned reviewers for WorkID
+    // JSON : [
+    //    {
+    //        "WorkID": "4",
+    //        "ReviewerID": "1",
+    //        "ReviewerName": "Melissa Klein",
+    //        "Message": "great article",
+    //        "DTime": "2019-11-13 07:00:00"
+    //    },
+    //    {
+    //        "WorkID": "4",
+    //        "ReviewerID": "2",
+    //        "ReviewerName": "Anton Swartz",
+    //        "Message": "Yes, it is. But I found some typos",
+    //        "DTime": "2019-11-13 07:01:00"
+    //    },
+    //        ............................
 } elseif (isset($_GET['getDiscussions'])) {
-    echo "\ngetDiscussionsRequest\n";
+//    echo "\ngetDiscussionsRequest\n";
 
     $WorkID = $_GET['WorkID'];
     $discussions = DB::select("SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;");
     echo json_encode($discussions);
+
+
+
 
     // receives http post request with params: saveMessage, reviewerID, WorkID, message, and date and time
     // note that date and time format should be "YYYYMMDDhhmmss" or "YYYY-MM-DD HH:mm:SS"

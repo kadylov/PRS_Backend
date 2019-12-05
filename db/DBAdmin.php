@@ -12,7 +12,9 @@ class DBAdmin {
         $reviewerName = $newReviewer->getName();
         $credential = $newReviewer->getCredentialID();
         $roleType = $newReviewer->getRoleId();
+        $email = $newReviewer->getEmail();
 
+//        Username, Password, RName, CredentialID, RoleId, Email
         if ($credential == 0 || $roleType == 0) {
             die("\nError, credential or roleId cannot be zero\n");
         }
@@ -77,7 +79,7 @@ class DBAdmin {
 
     public static function deleteReviewerByID($id) {
 
-        if ($id == 0) {
+        if ($id == 0 || $id === null) {
             die("\nError! Reviewer.class ID cannot be zero\n");
         }
 
@@ -93,13 +95,13 @@ class DBAdmin {
         $conn->close();
     }
 
-    public static function getAdminReviewsByID($adminId) {
-        if ($adminId == 0 || $adminId == null) {
-            die("Error! ID cannot be zero or null");
+    public static function getAdminReviewsByID($adminID) {
+        if ($adminID == 0 || $adminID === null) {
+            die("Error! admin ID cannot be zero or null");
         }
 
         $conn = connect();
-        $result = $conn->query('SELECT * FROM peer_review_db.Work WHERE Status="new";');
+        $result = $conn->query("SELECT * FROM peer_review_db.AdminReviews WHERE AdminID=$adminID;");
 
         $reviews = array();
         if (!$result) {
@@ -122,10 +124,6 @@ class DBAdmin {
         $decision = $adminReview->getDecision();
         $rejectedNote = $adminReview->getRejectNote();
 
-        if ($adminId == 0 || $workID == 0) {
-            die("\nError! adminid or workid cannot be zero\n");
-        }
-
         //    dbAdmin_Review columns: AdminID, WorkID, DateReviewed, Decision, RejectNote
         $conn = connect();
         $query = "INSERT INTO peer_review_db.Admin_Review (AdminID, WorkID, DateReviewed, Decision, RejectNote) VALUES(?,?,?,?,?); ";
@@ -140,7 +138,7 @@ class DBAdmin {
         }
 //        echo "Records inserted successfully.";
 
-
+        // update status with a new value(e.g. admitted) in Work table
         $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?;";
         if (!$stmt = $conn->prepare($query)) {
             die($conn->error);
@@ -159,31 +157,26 @@ class DBAdmin {
 
 //        echo "Records updated successfully.";
 
-        http_response_code(202);
+//        http_response_code(202);
     }
 
-    public static function getAllMessages($workID){
-        if(empty($workID))
-            die("Error! work id is undefined");
 
+    public static function createNewAssignment(Assignment $assignment) {
 
-
-    }
-
-    public static function newAssignment(Assignment $assignment) {
-
+        echo $assignment;
         $adminID = $assignment->getAdminID();
         $reviewerID = $assignment->getReviewerID();
+        $WorkID = $assignment->getWorkID();
         $DateAssigned = $assignment->getDateAssigned();
         $DueDate = $assignment->getDueDate();
 
 //        AdminID, ReviewerID, WorkID, DateAssigned, DueDate
         $conn = connect();
-        $query = "INSERT INTO peer_review_db.Assignment (AdminID, ReviewerID, WorkID, DateAssigned, DueDate) VALUES(?,?,?,?); ";
+        $query = "INSERT INTO peer_review_db.Assignment (AdminID, ReviewerID, WorkID, DateAssigned, DueDate) VALUES(?,?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
 
-        $stmt->bind_param("ssss", $adminID, $reviewerID, $WorkID, $DateAssigned, $DueDate);
+        $stmt->bind_param("sssss", $adminID, $reviewerID, $WorkID, $DateAssigned, $DueDate);
         if (!$stmt->execute()) {
             die($stmt->error);
         }

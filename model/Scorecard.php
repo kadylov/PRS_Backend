@@ -28,6 +28,11 @@ class Scorecard {
      * @return Scorecard
      */
     public function setWorkID($workID) {
+
+        if (empty($fromReviewerID) || !is_int($fromReviewerID)) {
+            die("\nError in Scorecard.class! work id is undefined\n");
+        }
+
         $this->workID = $workID;
         return $this;
     }
@@ -108,6 +113,9 @@ class Scorecard {
      * @return Scorecard
      */
     public function setReviewerID($reviewerID) {
+        if (empty($fromReviewerID) || !is_int($fromReviewerID)) {
+            die("\nError in Scorecard.class! reviewer id is undefined\n");
+        }
         $this->reviewerID = $reviewerID;
         return $this;
     }
@@ -140,6 +148,9 @@ class Scorecard {
      * @return Scorecard
      */
     public function setRoleId($roleId) {
+        if (empty($roleId) || !is_int($roleId)) {
+            die("\nError in Scorecad.class! role id is undefined\n");
+        }
         $this->roleId = $roleId;
         return $this;
     }

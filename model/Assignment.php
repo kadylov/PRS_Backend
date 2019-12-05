@@ -4,7 +4,7 @@
 class Assignment {
 
     private $adminID;
-    private $reviewerIDs;
+    private $reviewerID;
     private $workID;
     private $dateAssigned;
     private $dueDate;
@@ -17,7 +17,8 @@ class Assignment {
      * @param $dateAssigned
      * @param $dueDate
      */
-    public function __construct($adminID = NULL, $reviewerID = NULL, $workID = NULL, $dateAssigned = "000000", $dueDate = "000000") {
+
+    public function __construct( $adminID = NULL, $reviewerID = NULL, $workID = NULL, $dateAssigned = "000000", $dueDate = "000000") {
         $this->setAdminID($adminID);
         $this->setReviewerID($reviewerID);
         $this->setWorkID($workID);
@@ -46,17 +47,17 @@ class Assignment {
      * @return mixed
      */
     public function getReviewerID() {
-        return $this->reviewerIDs;
+        return $this->reviewerID;
     }
 
     /**
      * @param mixed reviewerIDs
      */
     public function setReviewerID($reviewerID): void {
-        if (empty($reviewerID) || !is_int($reviewerID)) {
+        if (empty($reviewerID) && !is_int($reviewerID)) {
             die("\nError in Assignment.class! reviewerID cannot be zero or empty\n");
         }
-        $this->$reviewerID = $reviewerID;
+        $this->reviewerID = $reviewerID;
     }
 
     /**
@@ -108,7 +109,7 @@ class Assignment {
 
 
     public function __toString() {
-        return "\nAssignment:\n adminID: $this->adminID \nReviewerID: $this->reviewerIDs\n workID: $this->workID\n dateAssigned: $this->dateAssigned\n Due date: $this->dueDate\n";
+        return "\nAssignment:\n adminID: $this->adminID \nReviewerID: $this->reviewerID\n workID: $this->workID\n dateAssigned: $this->dateAssigned\n Due date: $this->dueDate\n";
     }
 
 }

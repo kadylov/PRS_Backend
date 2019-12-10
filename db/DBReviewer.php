@@ -20,10 +20,11 @@ class DBReviewer {
 //        $query = "SELECT * FROM peer_review_db.ScorecardView WHERE WorkID='$workID' AND ReviewerID='$reviewerID';";
         $query = "SELECT * FROM peer_review_db.ScorecardView WHERE WorkID=$workID AND ReviewerID=$reviewerID;";
         $result = $conn->query($query);
-        if (!$result)
+        if (!$result) {
+            $conn->close();
             die("\nErrormessage:".$conn->error);
 
-
+        }
         elseif ($result->num_rows > 0) {
 //            $result = $result->fetch_all(MYSQLI_ASSOC);
 //            $result = $result->fetch_array(MYSQLI_ASSOC);

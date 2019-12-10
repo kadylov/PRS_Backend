@@ -39,6 +39,7 @@ class DBAdmin {
         $conn->close();
     }
 
+
     static public function updateReviewer(Reviewer $newReviewer) {
 
         echo $newReviewer;
@@ -49,26 +50,30 @@ class DBAdmin {
         $reviewerName = $newReviewer->getName();
         $credential = $newReviewer->getCredentialID();
         $roleType = $newReviewer->getRoleId();
+        $isActive = $newReviewer->getActiveFlag();
 
-        if ($rid == 0 || $credential == 0 || $roleType == 0) {
-            die("\nError! id or credential or roleId cannot be zero\n");
+        $foundUser = DB::select("SELECT * FROM peer_review_db.Reviewer WHERE RID=$rid;");
+        if ($foundUser == null) {
+            die("Error in DBAdmin.class! user is not found for update");
         }
 
 //        RID, Username, Password, RName, RCredential, RoleId
         $conn = connect();
-        $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=? WHERE RID=?;";
+        $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, IsActive=? WHERE RID=?;";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
+            $conn->close();
             die($stmt->error);
         }
 
 
-        $stmt->bind_param("ssssss", $username, $password, $reviewerName, $credential, $roleType, $rid);
+        $stmt->bind_param("sssssss", $username, $password, $reviewerName, $credential, $roleType, $isActive, $rid);
         if (!$stmt->execute()) {
+            $conn->close();
             die($stmt->error);
         }
 
-        echo "Records deleted successfully.";
+        echo "Records updated successfully.";
 
         // close statement
         $stmt->close();
@@ -94,6 +99,7 @@ class DBAdmin {
 
         $conn->close();
     }
+
 
     public static function getAdminReviewsByID($adminID) {
         if ($adminID == 0 || $adminID === null) {

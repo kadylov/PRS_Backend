@@ -111,7 +111,7 @@ elseif (isset($_GET['getScorecardForWork'])) {
     if (isset($_GET['ReviewerID'])) {
         $reviewerID = $_GET['ReviewerID'];
 
-        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewHistoryView WHERE ReviewerID=2;"));
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewHistoryView WHERE ReviewerID=$reviewerID;"));
     }
 
 

@@ -12,6 +12,7 @@ class Reviewer extends User {
     private $credentialID;
     private $roleId;
     private $email;
+    private $isActive;
 
     /**
      * Reviewer.class constructor.
@@ -26,6 +27,7 @@ class Reviewer extends User {
         $this->name = $name;
         $this->setCredential($credential);
         $this->setRoleId($roleId);
+        $this->isActive = 1;
     }
 
     /**
@@ -110,6 +112,19 @@ class Reviewer extends User {
      */
     public function setEmail($email): void {
         $this->email = $email;
+    }
+
+    public function getActiveFlag() {
+        return $this->isActive;
+    }
+
+    /**
+     * @param int $isActive
+     * @return Reviewer
+     */
+    public function setIsActive(int $isActive): Reviewer {
+        $this->isActive = $isActive;
+        return $this;
     }
 
 

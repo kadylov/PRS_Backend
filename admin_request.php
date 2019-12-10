@@ -50,7 +50,8 @@ if (isset($_GET['incommingWorks'])) {
 //        "Password": "1234",
 //        "Fullname": "Melissa Klein",
 //        "Credential": "Academic",
-//        "RoleType": "Reviewer"
+//        "RoleType": "Reviewer",
+//        "IsActive": "1
 //    },
 //    ...........................
 } elseif (isset($_GET['reviewerList'])) {
@@ -65,24 +66,27 @@ if (isset($_GET['incommingWorks'])) {
 } elseif (isset($_POST['createReviewer'])) {
 
 //    echo "\ncreateReviewer\n";
-    DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], $_POST["CredentialID"], $_POST["RoleId"]));
+    DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]));
 
 
 // receives http post request with params: updateReviewer, Username, Password, RName, CredentialID, RoleId
 // the data is collected, proccessed, and updated in the db
 } elseif (isset($_POST['updateReviewer'])) {
 //    echo "\nupdateReviewerRequest\n";
-    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], $_POST["CredentialID"], $_POST["RoleId"]);
-    $r->setRid($_POST["RID"]);
+    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
+    $r->setRid((int)$_POST["RID"]);
     DBAdmin::updateReviewer($r);
 
 
 // receives http post request with params: deleteReviewer, RID
 // deletes reviewer from the db
-} elseif (isset($_POST['deleteReviewer'])) {
+} elseif (isset($_POST['deactivateReviewer'])) {
 //    echo "\ndeleteRequest\n";
 
-    DBAdmin::deleteReviewerByID($_POST["RID"]);
+    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
+    $r->setRid((int)$_POST["RID"]);
+    $r->setIsActive(1);
+    DBAdmin::updateReviewer($r);
 
 
     // receives rejectedWork command as http get parameter
@@ -169,7 +173,7 @@ if (isset($_GET['incommingWorks'])) {
     echo json_encode($assignmentList);
 
 // receives http get request with param getAssignedReviewers, WorkID
-// respond back with list of assigned reviewers for WorkID in JSON:
+// respond back with a list of assigned reviewers for WorkID in JSON:
 //    [
 //    {
 //        "RID": "1",
@@ -177,7 +181,8 @@ if (isset($_GET['incommingWorks'])) {
 //        "Password": "1234",
 //        "Fullname": "Melissa Klein",
 //        "Credential": "Academic",
-    //        "RoleType": "Reviewer"//    },
+//        "RoleType": "Reviewer"
+//    },
 } elseif (isset($_GET['getAssignedReviewers'])) {
     echo "\ngetAssignedReviewers\n";
 
@@ -207,6 +212,7 @@ if (isset($_GET['incommingWorks'])) {
     DBAdmin::createNewAssignment($assignment);
 
 }
+
 
 
 ?>

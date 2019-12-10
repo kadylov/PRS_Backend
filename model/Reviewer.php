@@ -105,6 +105,13 @@ class Reviewer extends User {
     public function getEmail() {
     }
 
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email): void {
+        $this->email = $email;
+    }
+
 
 }
 

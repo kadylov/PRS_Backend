@@ -1,20 +1,30 @@
 <?php
 
 
-class Scorecard {
+class Scorecard implements JsonSerializable {
 
     private $workID;
     private $title;
     private $URL;
 
-    private $rubricText;
-    private $score;
+    private $score = [];
+    private $rubric = [];
 
     private $reviewerID;
     private $reviewerName;
     private $roleId;
     private $roleName;
     private $canScore;
+
+    /**
+     * Scorecard constructor.
+     */
+    public function __construct() {
+        $this->reviewerName = "";
+        $this->roleName = "";
+        $this->canScore = 1;
+    }
+
 
     /**
      * @return mixed
@@ -29,7 +39,7 @@ class Scorecard {
      */
     public function setWorkID($workID) {
 
-        if (empty($fromReviewerID) || !is_int($fromReviewerID)) {
+        if (empty($workID) || !is_int($workID)) {
             die("\nError in Scorecard.class! work id is undefined\n");
         }
 
@@ -69,18 +79,12 @@ class Scorecard {
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getRubricText() {
-        return $this->rubricText;
-    }
 
     /**
      * @param array $rubricText
      * @return Scorecard
      */
-    public function setRubricText($rubricText) {
+    public function addRubricText($rubricText) {
         $this->rubricText = $rubricText;
         return $this;
     }
@@ -88,7 +92,7 @@ class Scorecard {
     /**
      * @return mixed
      */
-    public function getScore():array {
+    public function getScore(): array {
         return $this->score;
     }
 
@@ -96,7 +100,7 @@ class Scorecard {
      * @param mixed $score
      * @return Scorecard
      */
-    public function setScore($score=null) {
+    public function setScore($score) {
         $this->score = $score;
         return $this;
     }
@@ -112,11 +116,11 @@ class Scorecard {
      * @param mixed $reviewerID
      * @return Scorecard
      */
-    public function setReviewerID($reviewerID) {
+    public function setReviewerID($fromReviewerID) {
         if (empty($fromReviewerID) || !is_int($fromReviewerID)) {
             die("\nError in Scorecard.class! reviewer id is undefined\n");
         }
-        $this->reviewerID = $reviewerID;
+        $this->reviewerID = $fromReviewerID;
         return $this;
     }
 
@@ -182,18 +186,51 @@ class Scorecard {
      * @param mixed $canScore
      * @return Scorecard
      */
-    public function setCanScore($canScore="yes") {
+    public function setCanScore($canScore = 0) {
         $this->canScore = $canScore;
         return $this;
     }
 
 
     public function __toString() {
-        return "\nScorecard\nWID: ".(string)$this->workID."\ntitle: ".(string)$this->title."\nurl: ".(string)$this->URL."\nrubrictext: ".print_r($this->rubricText,true)."\nscore: ".print_r($this->score,true)."\nreviewerId: ".(string)$this->reviewerID."\nreviwername: ".(string)$this->reviewerName."\nroleId: ".(string)$this->roleId."\nroleName: ".(string)$this->roleName."\n";
+        return "\nScorecard\nWID: ".(string)$this->workID."\ntitle: ".(string)$this->title."\nurl: ".(string)$this->URL."\nRubric: ".print_r($this->rubric, true)."\nscore: ".print_r($this->score, true)."\nreviewerId: ".(string)$this->reviewerID."\nreviwername: ".(string)$this->reviewerName."\nroleId: ".(string)$this->roleId."\nroleName: ".(string)$this->roleName."\n";
 
     }
 
+    /**
+     * @return array
+     */
+    public function getRubric(): array {
+        return $this->rubric;
+    }
 
+    /**
+     * @param array $rubric
+     */
+    public function setRubric(array $rubric): void {
+        $this->rubric = $rubric;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize() {
+        //            , , , Score, , , RoleId, RoleName
+
+        return [
+            "WorkID" => $this->workID,
+            "Title" => $this->title,
+            "URL" => $this->URL,
+            "ReviewerID" => $this->reviewerID,
+            "ReviewerName" => $this->reviewerName,
+            "RoleId" => $this->roleId,
+            "RoleName" => $this->roleId,
+            "Rubric" => $this->rubric,
+            "Scores" => $this->score,
+            "CanScore" => $this->canScore];
+
+    }
 }
 
 ?>

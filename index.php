@@ -19,7 +19,7 @@ require_once "db/DB.php";
 //var_dump($_POST['workID']);
 if (isset($_GET['scoredWorks'])) {
 
-    $works = DB::select('SELECT * FROM peer_review_db.Work;');
+    $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView;');
     echo json_encode($works);
 
 } elseif (isset($_POST['userLogin'])) {

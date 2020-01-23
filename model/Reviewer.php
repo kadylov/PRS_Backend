@@ -18,13 +18,15 @@ class Reviewer extends User {
      * Reviewer.class constructor.
      * @param $rid
      * @param $name
+     * @param $email
      * @param $credential
      * @param $roleId
      */
-    public function __construct($username, $password, $name, $credential, $roleId) {
+    public function __construct($username, $password, $name, $email, $credential, $roleId) {
         parent::__construct($username, $password);
 //        $this->rid = $rid;
         $this->name = $name;
+        $this->email = $email;
         $this->setCredential($credential);
         $this->setRoleId($roleId);
         $this->isActive = 1;
@@ -98,13 +100,19 @@ class Reviewer extends User {
 
     public function __toString() {
         try {
-            return "\nReviewer\nUsername: ".(string)$this->getUsername()."\nPassword: ".(string)$this->getUsername()."\nName: ".(string)$this->name."\ncredentialID: ".(string)$this->credentialID."\nRoleID: ".(string)$this->roleId."\n";
+            return "\nReviewer\nUsername: ".(string)$this->getUsername()
+                ."\nPassword: ".(string)$this->getPassword()
+                ."\nName: ".(string)$this->name
+                ."\nEmail: ".(string)$this->email
+                ."\ncredentialID: ".(string)$this->credentialID
+                ."\nRoleID: ".(string)$this->roleId."\n";
         } catch (Exception $exception) {
             return 'Error in Reviewer.class:toString';
         }
     }
 
     public function getEmail() {
+        return $this->email;
     }
 
     /**

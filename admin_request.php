@@ -69,11 +69,11 @@ if (isset($_GET['incommingWorks'])) {
     DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]));
 
 
-// receives http post request with params: updateReviewer, Username, Password, RName, CredentialID, RoleId
+// receives http post request with params: updateReviewer, Username, Password, RName, Email, CredentialID, RoleId
 // the data is collected, proccessed, and updated in the db
 } elseif (isset($_POST['updateReviewer'])) {
 //    echo "\nupdateReviewerRequest\n";
-    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
+    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], $_POST["Email"],(int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
     $r->setRid((int)$_POST["RID"]);
     DBAdmin::updateReviewer($r);
 
@@ -210,6 +210,22 @@ if (isset($_GET['incommingWorks'])) {
 //    var_dump($reviewerID);
     $assignment = new Assignment((int)$adminID, (int)$reviewerID, (int)$workID, $dateAssigned, $dueDate);
     DBAdmin::createNewAssignment($assignment);
+
+} elseif (isset($_GET['getUsers'])) {
+//    echo "\ngetUsers\n";
+
+    $users = DB::select("SELECT * FROM peer_review_db.UsersView;");
+
+    echo json_encode($users);
+
+}
+
+elseif (isset($_GET['getUserById'])) {
+//    echo "\ngetUsers\n";
+
+    $id = $_GET['getUserById'];
+    $user = DB::select("SELECT * FROM peer_review_db.UsersView WHERE id = $id;");
+    echo json_encode($user);
 
 }
 

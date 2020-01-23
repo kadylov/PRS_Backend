@@ -48,6 +48,7 @@ class DBAdmin {
         $username = $newReviewer->getUsername();
         $password = $newReviewer->getPassword();
         $reviewerName = $newReviewer->getName();
+        $reviewerEmail = $newReviewer->getEmail();
         $credential = $newReviewer->getCredentialID();
         $roleType = $newReviewer->getRoleId();
         $isActive = $newReviewer->getActiveFlag();
@@ -57,9 +58,9 @@ class DBAdmin {
             die("Error in DBAdmin.class! user is not found for update");
         }
 
-//        RID, Username, Password, RName, RCredential, RoleId
+//        RID, Username, Password, RName, CredentialID, RoleId, Email, IsActive
         $conn = connect();
-        $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, IsActive=? WHERE RID=?;";
+        $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE RID=?;";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $conn->close();
@@ -67,7 +68,7 @@ class DBAdmin {
         }
 
 
-        $stmt->bind_param("sssssss", $username, $password, $reviewerName, $credential, $roleType, $isActive, $rid);
+        $stmt->bind_param("ssssssss", $username, $password, $reviewerName, $credential, $roleType, $reviewerEmail, $isActive, $rid);
         if (!$stmt->execute()) {
             $conn->close();
             die($stmt->error);

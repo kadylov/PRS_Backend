@@ -27,8 +27,10 @@ if (isset($_GET['scoredWorks'])) {
     $password = $_POST['password'];
 
 //    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
-    $query="SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';";
+    $query="SELECT * FROM peer_review_db.UsersView where Username='$username' and Password='$password';";
     $user = DB::select($query);
+
+
     echo json_encode($user);
 //    echo json_encode($user);
 

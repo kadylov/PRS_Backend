@@ -12,12 +12,13 @@ if (isset($_GET['getScoredWorks'])) {
 
 //    $incommingWorks = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="new";');
 //    echo json_encode($incommingWorks);
-    echo "\npostAdminReviewRequest\n";
+    echo "\ngetScoredWorks\n";
 
-} elseif (isset($_POST['adminReview'])) {
-    echo "\npostAdminReviewRequest\n";
+//    WorkID, ReviewerID, DateReviewed, Score, ReviewerComment
+    $reviewsByLead = DB::select('SELECT * FROM peer_review_db.Reviews_History;');
+    
+    $assignedReviewers = DB::select('SELECT * FROM peer_review_db.Reviews_History;');
+
+
 }
-//$adminReview = new AdminReview($_POST['AdminID'], $_POST['WorkID'], $_POST['DateReviewed'], $_POST['Decision'], $_POST['RejectNote']);
-//DBAdmin::preReview($adminReview);
-
 ?>

@@ -13,14 +13,18 @@ abstract class User {
      * User constructor.  Username, Password, RName, RCredential, RoleId
      * @param $username
      * @param $password
+     * @param $name
+     * @param $credentialID
+     * @param $roleId
+     * @param $email
      */
-    public function __construct($username, $password, $name, $credentialID, $roleId, $email) {
+    public function __construct(string $username, string $password, string $name1, int $credentialID, int $roleId, string $email) {
         $this->username = $username;
         $this->password = $password;
-        $this->$name = $name;
+        $this->name = $name1;
         $this->setCredentialID($credentialID);
         $this->setRoleId($roleId);
-        $this->$email = $email;
+        $this->email = $email;
 
     }
 

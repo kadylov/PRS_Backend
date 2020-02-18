@@ -11,11 +11,12 @@ class Reviewer extends User {
 
     /**
      * Reviewer.class constructor.
-     * @param $rid
+     * @param $username
+     * @param $password
      * @param $name
-     * @param $email
      * @param $credential
      * @param $roleId
+     * @param $email
      */
     public function __construct($username, $password, $name, $credential, $roleId, $email) {
         parent::__construct($username, $password, $name, $credential, $roleId, $email);

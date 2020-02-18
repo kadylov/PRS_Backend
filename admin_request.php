@@ -65,9 +65,9 @@ if (isset($_GET['incommingWorks'])) {
 // creates a new reviewer in the db
 } elseif (isset($_POST['createReviewer'])) {
 
-//    echo "\ncreateReviewer\n";
-    DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]));
-
+    echo "\ncreateReviewer start\n";
+    DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"],$_POST["Email"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]));
+    echo "\ncreateReviewer done\n";
 
 // receives http post request with params: updateReviewer, Username, Password, RName, Email, CredentialID, RoleId
 // the data is collected, proccessed, and updated in the db
@@ -89,8 +89,9 @@ if (isset($_GET['incommingWorks'])) {
     DBAdmin::updateReviewer($r);
 
 
-    // receives rejectedWork command as http get parameter
-    // responds back with all rejected works in json format
+    // receives http get request with params: rejectedWork
+    // responds back with a list of all rejected works in json format
+
 } elseif (isset($_GET['rejectedWork'])) {
     echo "\nrejectedWorkRequest\n";
 
@@ -228,7 +229,14 @@ elseif (isset($_GET['getUserById'])) {
     echo json_encode($user);
 
 }
+//$username, $password, $name, $credentialID, $roleId, $email
+// construct($username, $password, $name, $credential, $roleId, $email)
+$newReviewer = new Reviewer("1111", "2222", "33333",2, 2, "emaiiiill");
+echo $newReviewer;
 
+echo "\n $newReviewer->getEmail()"
+
+//DBAdmin::createReviewer();
 
 
 ?>

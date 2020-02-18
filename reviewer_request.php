@@ -69,13 +69,15 @@ if (isset($_GET['listAssignments'])) {
 elseif (isset($_GET['getScorecardForWork'])) {
 //    echo "\nscorecardRequest: ".$_GET['WID'];
 
+
     // gets current scorecard of the reviewerID
-    // if the scorecard is not found, returns rubric for scoring work
+    // if the scorecard is not found, returns http error code 404(e.g. Not found)
     $scorecard = DBReviewer::getScorecard($_GET["WID"], $_GET["ReviewerID"]);
     if ($scorecard != null)
         echo json_encode($scorecard);
     else
-        echo json_encode(DBReviewer::getRubricText());
+        http_response_code(404); // respond with http code "404: not found"
+
 
 
 //  receives http post request with params: saveScorecard, rubricID as an array, scores as an array,reviewerID
@@ -164,7 +166,6 @@ elseif (isset($_GET['getScorecardForWork'])) {
 
     DBReviewer::saveReview(new Review((int)$workID, (int)$reviewerID, $dateReviewed, $score, $reviewerComment));
 }
-
 
 
 ?>

@@ -27,11 +27,15 @@ if (isset($_GET['scoredWorks'])) {
     $password = $_POST['password'];
 
 //    $result = $conn->query("SELECT * FROM peer_review_db.UsersVIew where Username='$username' and Password='$password';");
-    $query="SELECT * FROM peer_review_db.UsersView where Username='$username' and Password='$password';";
+    $query = "SELECT * FROM peer_review_db.UsersView where Username='$username' and Password='$password';";
     $user = DB::select($query);
 
+    if ($user != null) {
+        echo json_encode($user);
+    } else
+        http_response_code(404);
 
-    echo json_encode($user);
+
 //    echo json_encode($user);
 
 //    if (DBWork::deleteWork(new Work($workID)) == true)

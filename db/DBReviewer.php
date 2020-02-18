@@ -46,6 +46,9 @@ class DBReviewer {
             $scores["$obj->RubricID"] = $obj->Score;
             $scorecard->setCanScore("$obj->CanScore");
 
+//            echo $scorecard;
+
+
             while ($obj = $result->fetch_object()) {
                 $rubric["$obj->RubricID"] = $obj->RubricText;
                 $scores["$obj->RubricID"] = $obj->Score;

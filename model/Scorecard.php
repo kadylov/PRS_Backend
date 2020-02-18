@@ -193,7 +193,25 @@ class Scorecard implements JsonSerializable {
 
 
     public function __toString() {
-        return "\nScorecard\nWID: ".(string)$this->workID."\ntitle: ".(string)$this->title."\nurl: ".(string)$this->URL."\nRubric: ".print_r($this->rubric, true)."\nscore: ".print_r($this->score, true)."\nreviewerId: ".(string)$this->reviewerID."\nreviwername: ".(string)$this->reviewerName."\nroleId: ".(string)$this->roleId."\nroleName: ".(string)$this->roleName."\n";
+        return "\nScorecard
+            \nWorkID: ".(string)$this->workID.
+            "\nTitle: ".(string)$this->title.
+            "\nURL: ".(string)$this->URL.
+            "\nReviewerID: ".print_r($this->rubric, true).
+            "\nReviewerName: ".(string)$this->reviewerName.
+            "\nRoleId: ".(string)$this->roleId.
+            "\nroleName: ".(string)$this->roleName.
+            "\nRubric: ".print_r($this->rubric, true).
+            "\nScores: ".print_r($this->score, true);
+
+
+
+        /*
+            "Rubric" => $this->rubric,
+            "Scores" => $this->score,
+            "CanScore" => $this->canScore];
+         *
+         * */
 
     }
 
@@ -207,7 +225,7 @@ class Scorecard implements JsonSerializable {
     /**
      * @param array $rubric
      */
-    public function setRubric(array $rubric): void {
+    public function setRubric(array $rubric) {
         $this->rubric = $rubric;
     }
 
@@ -216,16 +234,14 @@ class Scorecard implements JsonSerializable {
      * @inheritDoc
      */
     public function jsonSerialize() {
-        //            , , , Score, , , RoleId, RoleName
-
         return [
             "WorkID" => $this->workID,
             "Title" => $this->title,
             "URL" => $this->URL,
             "ReviewerID" => $this->reviewerID,
             "ReviewerName" => $this->reviewerName,
-            "RoleId" => $this->roleId,
-            "RoleName" => $this->roleId,
+            "RoleId" =>  $this->roleId,
+            "RoleName" => $this->roleName,
             "Rubric" => $this->rubric,
             "Scores" => $this->score,
             "CanScore" => $this->canScore];

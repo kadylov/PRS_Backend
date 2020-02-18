@@ -13,19 +13,51 @@ class DBAdmin {
         $credential = $newReviewer->getCredentialID();
         $roleType = $newReviewer->getRoleId();
         $email = $newReviewer->getEmail();
+        $activeFlag = $newReviewer->getActiveFlag();
 
-//        Username, Password, RName, CredentialID, RoleId, Email
         if ($credential == 0 || $roleType == 0) {
             die("\nError, credential or roleId cannot be zero\n");
         }
 
-//        RID, Username, Password, RName, RCredential, RoleId
+        $query = "INSERT INTO peer_review_db.Reviewer (Username, Password, RName, CredentialID, RoleId, Email, IsActive) VALUES(?,?,?,?,?,?,?); ";
+//        RID, Username, Password, RName, CredentialID, RoleId, Email, IsActive
         $conn = connect();
-        $query = "INSERT INTO peer_review_db.Reviewer (Username, Password, RName, CredentialID, RoleId) VALUES(?,?,?,?,?); ";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("sssssss", $username, $password, $reviewerName, $credential, $roleType, $email, $activeFlag);
+        if (!$stmt->execute()) {
+            die($stmt->error);
+        }
+
+        echo "Records inserted successfully.";
+
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+    }
+
+    static public function createAdmin(Admin $newAdmin) {
+
+        $username = $newAdmin->getUsername();
+        $password = $newAdmin->getPassword();
+        $name = $newAdmin->getName();
+        $credential = $newAdmin->getCredentialID();
+        $roleType = $newAdmin->getRoleId();
+        $email = $newAdmin->getEmail();
+        $activeFlag = $newAdmin->getActiveFlag();
+
+        if ($credential == 0 || $roleType == 0) {
+            die("\nError, credential or roleId cannot be zero\n");
+        }
+
+        //AID, Username, Password, AName, CredentialID, RoleId, Email
+        $query = "INSERT INTO peer_review_db.Admin (Username, Password, AName, CredentialID, RoleId, Email) VALUES(?,?,?,?,?,?); ";
+        $conn = connect();
         $stmt = $conn->prepare($query);
 
 
-        $stmt->bind_param("sssss", $username, $password, $reviewerName, $credential, $roleType);
+        $stmt->bind_param("ssssss", $username, $password, $name, $credential, $roleType, $email);
         if (!$stmt->execute()) {
             die($stmt->error);
         }

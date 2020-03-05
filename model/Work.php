@@ -6,6 +6,7 @@ class Work
     private $wid=0;
     private $title="";
     private $authorName="";
+    private $authorEmail="";
     private $url="";
     private $tags = "";
     private $dateWritten="";
@@ -15,7 +16,6 @@ class Work
 
     /**
      * Work.class constructor.
-     * @param int $wid
      * @param string $title
      * @param string $authorName
      * @param string $url
@@ -25,9 +25,8 @@ class Work
      * @param string $retireFlag
      * @param string $status
      */
-    public function __construct($wid, $title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="no", $status="new")
+    public function __construct($title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="no", $status="new")
     {
-        $this->wid = $wid;
         $this->title = $title;
         $this->authorName = $authorName;
         $this->url = $url;
@@ -84,6 +83,22 @@ class Work
     public function setAuthorName($authorName)
     {
         $this->authorName = $authorName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAuthorEmail()
+    {
+        return $this->authorEmail;
+    }
+
+    /**
+     * @param string $email
+     */
+    public function setAuthorEmail($email)
+    {
+        $this->authorEmail = $email;
     }
 
     /**
@@ -180,6 +195,23 @@ class Work
     public function setStatus($status)
     {
         $this->status = $status;
+    }
+
+
+    public function __toString() {
+        try {
+            return "\nWork\nTitle: ".(string)$this->getTitle()
+                ."\nAuthor: ".(string)$this->getAuthorName()
+                ."\nEmail: ".(string)$this->getAuthorEmail()
+                ."\nUrl: ".(string)$this->getUrl()
+                ."\ntags: ".(string)$this->getTags()
+                ."\ndatePublished: ".(string)$this->getDateSubmitted()
+                ."\nRetireFlag: ".(string)$this->getRetireFlag()
+                ."\nStatus: ".(string)$this->getStatus()
+                ."\ndateWritten: ".(string)$this->getDateWritten()."\n";
+        } catch (Exception $exception) {
+            return 'Error in Reviewer.class:toString';
+        }
     }
 }
 ?>

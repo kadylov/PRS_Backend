@@ -9,7 +9,8 @@ class Admin extends User {
 
     /**
      * Reviewer.class constructor.
-     * @param $rid
+     * @param $username
+     * @param $password
      * @param $name
      * @param $email
      * @param $credential
@@ -17,8 +18,7 @@ class Admin extends User {
      */
     public function __construct($username, $password, $name, $credential, $roleId, $email) {
         parent::__construct($username, $password, $name, $credential, $roleId, $email);
-
-//        $this->rid = $rid;
+        // string $username, string $password, string $name1, int $credentialID, int $roleId, string $email) {
     }
 
 

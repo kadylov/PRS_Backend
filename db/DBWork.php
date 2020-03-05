@@ -19,29 +19,23 @@ class DBWork {
     static public function insertWork(Work $newWork) {
 
         $title = $newWork->getTitle();
-        $authorName = $newWork->AuthorName();
+        $authorName = $newWork->getAuthorName();
         $url = $newWork->getUrl();
         $tags = $newWork->getTags();
         $dateWritten = $newWork->getDateWritten();
         $dateSubmitted = $newWork->getDateSubmitted();
         $retireFlag = $newWork->getRetireFlag();
         $status = $newWork->getStatus();
+        $email = $newWork->getAuthorEmail();
+
+        //WID, Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, TagID
+        $query = "INSERT INTO peer_review_db.Work (Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, Tags) VALUES(?,?,?,?,?,?,?,?,?); ";
 
         $conn = connect();
-        //WID, Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, Tag, RSID, Score
-        $query = "INSERT INTO peer_review_db.Work (Title, URL, DateSubmission, DateWritten, IsRetired, Status, AuthorName, AuthorEmail, Tag, Score) VALUES(?,?,?,?,?,?,?,?,?,?); ";
-        if ($stmt = $conn->prepare($query)) {
-
-            $stmt->bind_param("ssssssss", $title, $authorName, $url, $tags, $dateWritten, $dateSubmitted, $retireFlag, $status);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result !== FALSE)
-                $result = $result->fetch_all(MYSQLI_ASSOC);
-
-            echo "Records inserted successfully.";
-        } else {
-            echo "ERROR: Could not prepare query: $query. ".$conn->error;
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("sssssssss", $title, $url, $dateSubmitted, $dateWritten, $retireFlag, $status, $authorName, $email, $tags);
+        if (!$stmt->execute()) {
+            echo json_encode($stmt->error);
         }
 
         // close statement
@@ -49,7 +43,6 @@ class DBWork {
 
         // close connection
         $conn->close();
-        return $result;
 
     }
 

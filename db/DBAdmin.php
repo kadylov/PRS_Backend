@@ -3,38 +3,42 @@
 
 class DBAdmin {
 
-    static public function createReviewer(Reviewer $newReviewer) {
+    static public function createUser(User $user) {
+        $flag = true;
+        $username = $user->getUsername();
+        $password = $user->getPassword();
+        $reviewerName = $user->getName();
+        $credential = $user->getCredentialID();
+        $roleType = $user->getRoleId();
+        $email = $user->getEmail();
+        $activeFlag = $user->getActiveFlag();
 
-        echo $newReviewer;
+        if ($roleType == 3) {
+            $query = "INSERT INTO peer_review_db.Admin (Username, Password, AName, CredentialID, RoleId, Email, IsActive) VALUES(?,?,?,?,?,?,?); ";
 
-        $username = $newReviewer->getUsername();
-        $password = $newReviewer->getPassword();
-        $reviewerName = $newReviewer->getName();
-        $credential = $newReviewer->getCredentialID();
-        $roleType = $newReviewer->getRoleId();
-        $email = $newReviewer->getEmail();
-        $activeFlag = $newReviewer->getActiveFlag();
+        } else {
+            $query = "INSERT INTO peer_review_db.Reviewer (Username, Password, RName, CredentialID, RoleId, Email, IsActive) VALUES(?,?,?,?,?,?,?); ";
 
-        if ($credential == 0 || $roleType == 0) {
-            die("\nError, credential or roleId cannot be zero\n");
         }
 
-        $query = "INSERT INTO peer_review_db.Reviewer (Username, Password, RName, CredentialID, RoleId, Email, IsActive) VALUES(?,?,?,?,?,?,?); ";
+
 //        RID, Username, Password, RName, CredentialID, RoleId, Email, IsActive
         $conn = connect();
         $stmt = $conn->prepare($query);
         $stmt->bind_param("sssssss", $username, $password, $reviewerName, $credential, $roleType, $email, $activeFlag);
         if (!$stmt->execute()) {
-            die($stmt->error);
+            echo $stmt->error;
+            $flag = false;
         }
 
-        echo "Records inserted successfully.";
+//        echo "Records inserted successfully.";
 
         // close statement
         $stmt->close();
 
         // close connection
         $conn->close();
+        return $flag;
     }
 
     static public function createAdmin(Admin $newAdmin) {
@@ -45,7 +49,6 @@ class DBAdmin {
         $credential = $newAdmin->getCredentialID();
         $roleType = $newAdmin->getRoleId();
         $email = $newAdmin->getEmail();
-        $activeFlag = $newAdmin->getActiveFlag();
 
         if ($credential == 0 || $roleType == 0) {
             die("\nError, credential or roleId cannot be zero\n");
@@ -72,41 +75,45 @@ class DBAdmin {
     }
 
 
-    static public function updateReviewer(Reviewer $newReviewer) {
+    static public function updateUser(User $user, $oldUsername, $oldEmail) {
+        $rid = $user->getRid();
+        $username = $user->getUsername();
+        $password = $user->getPassword();
+        $reviewerName = $user->getName();
+        $reviewerEmail = $user->getEmail();
+        $credential = $user->getCredentialID();
+        $roleType = $user->getRoleId();
+        $isActive = $user->getActiveFlag();
 
-        echo $newReviewer;
+        $foundReviewer = DB::select("SELECT * FROM peer_review_db.Reviewer WHERE RID=$rid AND Username='$oldUsername' AND Email='$oldEmail'");
 
-        $rid = $newReviewer->getRid();
-        $username = $newReviewer->getUsername();
-        $password = $newReviewer->getPassword();
-        $reviewerName = $newReviewer->getName();
-        $reviewerEmail = $newReviewer->getEmail();
-        $credential = $newReviewer->getCredentialID();
-        $roleType = $newReviewer->getRoleId();
-        $isActive = $newReviewer->getActiveFlag();
+        $foundAdmin = DB::select("SELECT * FROM peer_review_db.Admin WHERE AID=3 AND Username='$oldUsername' AND Email='$oldEmail'");
 
-        $foundUser = DB::select("SELECT * FROM peer_review_db.Reviewer WHERE RID=$rid;");
-        if ($foundUser == null) {
-            die("Error in DBAdmin.class! user is not found for update");
+        if ($foundReviewer != null) {
+            $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE RID=?;";
+        }
+        else if ($foundAdmin != null) {
+            $query = "UPDATE peer_review_db.Admin SET Username=?, Password=?, AName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE AID=?;";
+        }
+        else{
+            http_response_code(406); // not acceptable code
+            echo json_encode(array("Error in DBAdmin.class! user is not found for update"));
         }
 
-//        RID, Username, Password, RName, CredentialID, RoleId, Email, IsActive
         $conn = connect();
-        $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE RID=?;";
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $conn->close();
-            die($stmt->error);
+            http_response_code(406); // not acceptable code
+            echo json_encode($stmt->error);
         }
-
 
         $stmt->bind_param("ssssssss", $username, $password, $reviewerName, $credential, $roleType, $reviewerEmail, $isActive, $rid);
         if (!$stmt->execute()) {
             $conn->close();
-            die($stmt->error);
+            http_response_code(406); // not acceptable code
+            echo json_encode($stmt->error);
         }
-
-        echo "Records updated successfully.";
 
         // close statement
         $stmt->close();
@@ -125,9 +132,11 @@ class DBAdmin {
 
         $conn = connect();
         if ($conn->query($sql) === true) {
-            echo "Reviewer.class was deleted successfully.";
+            json_encode("Reviewer.class was deleted successfully.");
         } else {
-            echo "ERROR: Could not able to execute $sql. ".$conn->error;
+            http_response_code(409);
+            json_encode("ERROR: Could not able to execute $sql. ".$conn->error);
+
         }
 
         $conn->close();
@@ -232,6 +241,28 @@ class DBAdmin {
 
     }
 
+    public static function deactivateUserById(int $id, int $roleId, int $activeStatus) {
+        if ($id === null) {
+            die("\nError! Reviewer.class ID cannot be null\n");
+        }
+
+        $sql = "UPDATE  peer_review_db.Reviewer SET isActive=$activeStatus WHERE RID=$id";
+        $conn = connect();
+
+        if ($roleId === 3) {    // admin id is 3
+            this.$sql = "UPDATE  peer_review_db.Admin SET isActive=$activeStatus WHERE AID=$id";
+        }
+
+        if ($conn->query($sql) === true) {
+            json_encode("Reviewer.class was deleted successfully.");
+            http_response_code(200);
+
+        } else {
+            json_encode("ERROR: Could not able to execute $sql. ".$conn->error);
+        }
+
+        $conn->close();
+    }
 
 }
 

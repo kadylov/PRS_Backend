@@ -5,6 +5,7 @@ require_once "header_config.php";
 require_once "model/Reviewer.php";
 require_once "model/AdminReview.php";
 require_once "model/Assignment.php";
+require_once "model/Admin.php";
 
 require_once "db/DBReviewer.php";
 require_once "db/DBAdmin.php";
@@ -63,30 +64,55 @@ if (isset($_GET['incommingWorks'])) {
 
 // receives http post request with params: createReviewer, Username, Password, RName, CredentialID, RoleId
 // creates a new reviewer in the db
-} elseif (isset($_POST['createReviewer'])) {
+} elseif (isset($_POST['createUser'])) {
 
-    echo "\ncreateReviewer start\n";
-    DBAdmin::createReviewer(new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], $_POST["Email"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]));
-    echo "\ncreateReviewer done\n";
+    $roleId = (int)$_POST["RoleId"];
+
+    $user = null;
+
+    if ($roleId === 3) { // role is admin?
+        //    $username, $password, $name, $credential, $roleId, $email) {
+        $user = new Admin($_POST["Username"], $_POST["Password"], $_POST["Name"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"], $_POST["Email"]);
+
+    } else {
+        $user = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["Name"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"], $_POST["Email"]);
+    }
+
+
+    if (DBAdmin::createUser($user)) {
+        http_response_code(200);
+    } else
+        http_response_code(409);
+
 
 // receives http post request with params: updateReviewer, Username, Password, RName, Email, CredentialID, RoleId
 // the data is collected, proccessed, and updated in the db
-} elseif (isset($_POST['updateReviewer'])) {
-//    echo "\nupdateReviewerRequest\n";
-    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], $_POST["Email"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
-    $r->setRid((int)$_POST["RID"]);
-    DBAdmin::updateReviewer($r);
+} elseif (isset($_POST['updateUser'])) {
+    //$username, $password, $name, $credential, $roleId, $email) {
+//    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"], $_POST["Email"]);
+    $roleId = (int)$_POST["RoleId"];
+
+    $user = null;
+
+    if ($roleId === 3) { // role is admin?
+        $user = new Admin($_POST["Username"], $_POST["Password"], $_POST["Name"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"], $_POST["Email"]);
+    } else {
+        $user = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["Name"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"], $_POST["Email"]);
+    }
+
+    $user->setRid((int)$_POST["ID"]);
+
+
+    DBAdmin::updateUser($user, $_POST["oldUsername"],$_POST["oldEmail"]);
+    http_response_code(200);
 
 
 // receives http post request with params: deleteReviewer, RID
 // deletes reviewer from the db
-} elseif (isset($_POST['deactivateReviewer'])) {
+} elseif (isset($_POST['deleteReviewer'])) {
 //    echo "\ndeleteRequest\n";
 
-    $r = new Reviewer($_POST["Username"], $_POST["Password"], $_POST["RName"], (int)$_POST["CredentialID"], (int)$_POST["RoleId"]);
-    $r->setRid((int)$_POST["RID"]);
-    $r->setIsActive(1);
-    DBAdmin::updateReviewer($r);
+    DBAdmin::deleteReviewerByID($_POST['RID']);
 
 
     // receives http get request with params: rejectedWork
@@ -225,6 +251,21 @@ if (isset($_GET['incommingWorks'])) {
     $id = $_GET['getUserById'];
     $user = DB::select("SELECT * FROM peer_review_db.UsersView WHERE id = $id;");
     echo json_encode($user);
+
+} elseif (isset($_GET['getRolesCredential'])) {
+
+    // get a list of roles and credentials
+    $roleList = DB::select("SELECT * FROM peer_review_db.Role;");
+    $credentialList = DB::select("SELECT * FROM peer_review_db.ReviewerCredential;");
+
+    $roleCredential = array("roles" => $roleList, "credentials" => $credentialList);
+
+    echo json_encode($roleCredential);
+
+} elseif (isset($_POST['deactivateUser'])) {
+//    echo "\ngetUsers\n";
+
+    DBAdmin::deactivateUserById($_POST['id'], $_POST['roleId'], $_POST['activeStatus']);
 
 }
 

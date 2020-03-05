@@ -7,8 +7,6 @@ require_once 'User.php';
 class Reviewer extends User {
     //        RID, Username, Password, RName, RCredential, RoleId
 
-    private $isActive;
-
     /**
      * Reviewer.class constructor.
      * @param $username
@@ -20,8 +18,7 @@ class Reviewer extends User {
      */
     public function __construct($username, $password, $name, $credential, $roleId, $email) {
         parent::__construct($username, $password, $name, $credential, $roleId, $email);
-//        $this->rid = $rid;
-        $this->isActive = 1;
+        // string $username, string $password, string $name1, int $credentialID, int $roleId, string $email) {
     }
 
     public function __toString() {
@@ -37,17 +34,7 @@ class Reviewer extends User {
         }
     }
 
-    public function getActiveFlag() {
-        return $this->isActive;
-    }
 
-    /**
-     * @param int $isActive
-     * @return Reviewer
-     */
-    public function setIsActive(int $isActive): Reviewer {
-        $this->isActive = $isActive;
-    }
 }
 
 ?>

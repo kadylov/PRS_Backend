@@ -8,6 +8,8 @@ abstract class User {
     private $credentialID;
     private $roleId;
     private $email;
+    private $isActive;
+
 
     /**
      * User constructor.  Username, Password, RName, RCredential, RoleId
@@ -18,7 +20,8 @@ abstract class User {
      * @param $roleId
      * @param $email
      */
-    public function __construct(string $username, string $password, string $name1, int $credentialID, int $roleId, string $email) {
+    public function __construct($username, $password, $name1, $credentialID, $roleId, $email) {
+
         $this->username = $username;
         $this->password = $password;
         $this->name = $name1;
@@ -26,6 +29,7 @@ abstract class User {
         $this->setRoleId($roleId);
         $this->email = $email;
 
+        $this->isActive = 1;
     }
 
     /**
@@ -38,7 +42,7 @@ abstract class User {
     /**
      * @param mixed $username
      */
-    public function setUsername($username): void {
+    public function setUsername($username) {
         $this->username = $username;
     }
 
@@ -52,7 +56,7 @@ abstract class User {
     /**
      * @param mixed $password
      */
-    public function setPassword($password): void {
+    public function setPassword($password) {
         $this->password = $password;
     }
 
@@ -66,7 +70,7 @@ abstract class User {
     /**
      * @param mixed $rid
      */
-    public function setRid($rid): void {
+    public function setRid($rid) {
         if (empty($rid) || !is_int($rid)) {
             die("\nError in Reviewer.class! rid is undefined\n");
         }
@@ -83,7 +87,7 @@ abstract class User {
     /**
      * @param mixed $name
      */
-    public function setName($name): void {
+    public function setName($name) {
         $this->name = $name;
     }
 
@@ -97,7 +101,7 @@ abstract class User {
     /**
      * @param mixed $credentialID
      */
-    public function setCredentialID($credentialID): void {
+    public function setCredentialID($credentialID) {
         if (empty($credentialID) || !is_int($credentialID)) {
             die("\nError in Reviewer.class! credentialID is undefined\n");
         }
@@ -114,11 +118,12 @@ abstract class User {
     /**
      * @param mixed $roleId
      */
-    public function setRoleId($roleId): void {
+    public function setRoleId($roleId) {
         if (empty($roleId) || !is_int($roleId)) {
             die("\nError in Reviewer.class! roleId is undefined\n");
         }
         $this->roleId = $roleId;
+
     }
 
     /**
@@ -131,8 +136,20 @@ abstract class User {
     /**
      * @param mixed $email
      */
-    public function setEmail($email): void {
+    public function setEmail($email) {
         $this->email = $email;
+    }
+
+    public function getActiveFlag() {
+        return $this->isActive;
+    }
+
+    /**
+     * @param int $isActive
+     * @return Reviewer
+     */
+    public function setIsActive(int $isActive) {
+        $this->isActive = $isActive;
     }
 
 

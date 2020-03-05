@@ -65,8 +65,7 @@ if (isset($_GET['listAssignments'])) {
 //    },
 //    "CanScore": "0"
 //}
-}
-elseif (isset($_GET['getScorecardForWork'])) {
+} elseif (isset($_GET['getScorecardForWork'])) {
 //    echo "\nscorecardRequest: ".$_GET['WID'];
 
 
@@ -77,7 +76,6 @@ elseif (isset($_GET['getScorecardForWork'])) {
         echo json_encode($scorecard);
     else
         http_response_code(404); // respond with http code "404: not found"
-
 
 
 //  receives http post request with params: saveScorecard, rubricID as an array, scores as an array,reviewerID
@@ -113,7 +111,7 @@ elseif (isset($_GET['getScorecardForWork'])) {
     if (isset($_GET['ReviewerID'])) {
         $reviewerID = $_GET['ReviewerID'];
 
-        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewHistoryView WHERE ReviewerID=$reviewerID;"));
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewHistoryView WHERE RID=$reviewerID;"));
     }
 
 
@@ -165,6 +163,21 @@ elseif (isset($_GET['getScorecardForWork'])) {
     $reviewerComment = $_POST['ReviewerComment'];
 
     DBReviewer::saveReview(new Review((int)$workID, (int)$reviewerID, $dateReviewed, $score, $reviewerComment));
+
+
+} elseif (isset($_GET['assignmentHistory'])) {
+//    echo "\nreviewHistory\n";
+    if (isset($_GET['ReviewerID'])) {
+        $reviewerID = $_GET['ReviewerID'];
+
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentHistView where ReviewerID=$reviewerID;"));
+    }
+} elseif (isset($_GET['assignedWorks'])) {
+//    echo "\nreviewHistory\n";
+    if (isset($_GET['ReviewerID'])) {
+        $reviewerID = $_GET['ReviewerID'];
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView where ReviewerID=$reviewerID;"));
+    }
 }
 
 

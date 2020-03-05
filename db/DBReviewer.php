@@ -18,7 +18,7 @@ class DBReviewer {
         $scorecard = null;
 
 //        $query = "SELECT * FROM peer_review_db.ScorecardView WHERE WorkID='$workID' AND ReviewerID='$reviewerID';";
-        $query = "SELECT * FROM peer_review_db.ScorecardView WHERE WorkID=$workID AND ReviewerID=$reviewerID;";
+        $query = "SELECT * FROM peer_review_db.NewScorecardView WHERE WorkID=$workID AND ReviewerID=$reviewerID;";
         $result = $conn->query($query);
         if (!$result) {
             $conn->close();

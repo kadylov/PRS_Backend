@@ -1,5 +1,7 @@
 <?php
 
+require_once './Utils/util.php';
+
 
 class AdminReview {
     private $adminID;
@@ -16,10 +18,10 @@ class AdminReview {
      * @param $decision
      * @param $rejectNote
      */
-    public function __construct($adminID, $workID, $dateReviewed="", $decision = "", $rejectNote = "") {
+    public function __construct($adminID, $workID, $dateReviewed = "", $decision = "", $rejectNote = "") {
         $this->setAdminID($adminID);
         $this->setWorkID($workID);
-        $this->dateReviewed = $dateReviewed;
+        $this->setDateReviewed($dateReviewed);
         $this->decision = $decision;
         $this->rejectNote = $rejectNote;
     }
@@ -35,9 +37,10 @@ class AdminReview {
     /**
      * @param mixed $adminID
      */
-    public function setAdminID($adminID): void {
-        if ($this->isEmpty($adminID)) {
-            die("\nError in AdminReview.class! adminID is undefined\n");
+    public function setAdminID($adminID) {
+        if (!validatesAsInt($adminID)) {
+            responseWithError("adminID is undefined");
+            return;
         }
         $this->adminID = $adminID;
     }
@@ -52,11 +55,11 @@ class AdminReview {
     /**
      * @param mixed $workID
      */
-    public function setWorkID($workID): void {
-        if ($this->isEmpty($workID)) {
-            die("\nError in AdminReview.class! workID is undefined\n");
+    public function setWorkID($workID) {
+        if (!validatesAsInt($workID) || $workID < 1) {
+            responseWithError("workID is undefined");
+            return;
         }
-
         $this->workID = $workID;
     }
 
@@ -70,7 +73,12 @@ class AdminReview {
     /**
      * @param mixed $dateReviewed
      */
-    public function setDateReviewed($dateReviewed): void {
+    public function setDateReviewed($dateReviewed) {
+        if (!validateDate($dateReviewed, "Y-m-d")) {
+            responseWithError("Invalid date. Date must be in YYYY-MM-dd format");
+            return;
+        }
+
         $this->dateReviewed = $dateReviewed;
     }
 
@@ -84,7 +92,7 @@ class AdminReview {
     /**
      * @param mixed $decision
      */
-    public function setDecision($decision): void {
+    public function setDecision($decision) {
         $this->decision = $decision;
     }
 
@@ -98,7 +106,7 @@ class AdminReview {
     /**
      * @param mixed $rejectNote
      */
-    public function setRejectNote($rejectNote): void {
+    public function setRejectNote($rejectNote) {
         $this->rejectNote = $rejectNote;
     }
 
@@ -117,6 +125,7 @@ class AdminReview {
     private function isEmpty($var) {
         return ($var == 0 || $var === '' || $var === null);
     }
+
 }
 
 ?>

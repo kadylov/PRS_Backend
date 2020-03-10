@@ -14,30 +14,56 @@ require_once "db/DB.php";
 
 
 // receives http get request with params: incommingWorks
-// responds back with a list of new work submissions for a pre-review in JSON:
-// [
+// responds back with a list of new work submissions for a pre-review in JSON (Sample response is following):
+//[
 //    {
-//        "ReviewerID": "1",
-//        "RName": "Melissa Klein",
-//        "WorkID": "4",
-//        "Title": "Can you measure the ROI of your social media marketing?",
-//        "URL": "https://www.researchgate.net/publication/228237594_Can_You_Measure_the_ROI_of_Your_Social_Media_Marketing",
-//        "DateAssigned": "2019-11-12",
-//        "DueDate": "2019-11-14"
-//    }
-//      ........
+//        "WID": "27",
+//        "Title": "Audiences",
+//        "URL": "https://thearf.org/category/topics/audience-media-measurement/",
+//        "DateSubmission": "2020-02-25",
+//        "DateWritten": "2020-02-25",
+//        "IsRetired": "no",
+//        "Status": "new",
+//        "AuthorName": "Brad Fay",
+//        "AuthorEmail": "dparcheta@gmail.com",
+//        "Tags": "Standard,Quick read,Basic,Impressions,Measurement,Ongoing,Measurement"
+//    },
+//  ...................................................
 //]
 if (isset($_GET['incommingWorks'])) {
     $incommingWorks = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="new";');
     echo json_encode($incommingWorks);
 
 
+
+// receives http get request with params: allWorks
+// responds back with a list of all works(e.g. scored, not scored, retired, and etc) in JSON (Sample response is following):
+//[
+//    {
+//        "WID": "1",
+//        "Title": "New Metrics for New Media: Toward the Development of Web Measurement Standards",
+//        "URL": "https://www.researchgate.net/publication/228606680_New_Metrics_for_New_Media_Toward_the_Development_of_Web_Measurement_Standards",
+//        "DateSubmission": "2019-11-11",
+//        "DateWritten": "1996-09-26",
+//        "IsRetired": "no",
+//        "Status": "scored",
+//        "AuthorName": "TP Novak, DL Hoffman",
+//        "AuthorEmail": "abca@mail.com",
+//        "Tags": "Standard"
+//    },
+//  ...................................................
+//]
+}elseif(isset($_GET['allWorks'])){
+    $works = DB::select('SELECT * FROM peer_review_db.Work');
+    echo json_encode($works);
+
+
 // receives http post request with params: adminReview, AdminID, WorkID, DateReviewed, Decision, RejectNote,
 // the data is collected and saved in db
-// work status is updated to 'admitted'.
+// work status is updated to 'admitted' or 'rejected'.
 } elseif (isset($_POST['adminReview'])) {
-    echo "\npostAdminReviewRequest\n";
-
+//    echo "\npostAdminReviewRequest\n";
+//    var_dump($_POST);
     $adminReview = new AdminReview($_POST['AdminID'], $_POST['WorkID'], $_POST['DateReviewed'], $_POST['Decision'], $_POST['RejectNote']);
     DBAdmin::preReview($adminReview);
 
@@ -116,10 +142,28 @@ if (isset($_GET['incommingWorks'])) {
 
 
     // receives http get request with params: rejectedWork
-    // responds back with a list of all rejected works in json format
+    // responds back with a list of all rejected works in json format (Sample respond is following):
+//    [
+//    {
+//        "WID": "1",
+//        "Title": "New Metrics for New Media: Toward the Development of Web Measurement Standards",
+//        "URL": "https://www.researchgate.net/publication/228606680_New_Metrics_for_New_Media_Toward_the_Development_of_Web_Measurement_Standards",
+//        "DateSubmission": "2019-11-11",
+//        "DateWritten": "1996-09-26",
+//        "IsRetired": "no",
+//        "Status": "scored",
+//        "AuthorName": "TP Novak, DL Hoffman",
+//        "AuthorEmail": "abca@mail.com",
+//        "Tags": "Standard",
+//        "AdminID": "0",
+//        "Admin": "Edward Snipes",
+//        "DateReviewed": "2019-12-11",
+//        "RejectNote": "Poor grammar"
+//    }
+//]
 
 } elseif (isset($_GET['rejectedWork'])) {
-    echo "\nrejectedWorkRequest\n";
+   // echo "\nrejectedWorkRequest\n";
 
     $works = DB::select('SELECT * FROM peer_review_db.RejectedWorkView;');
     echo json_encode($works);
@@ -158,7 +202,7 @@ if (isset($_GET['incommingWorks'])) {
 //        "Title": "",
 //        "AuthorName": "",
 //        "AuthorEmail": "",
-//        "TagID": "",
+//        "Tags": "",
 //    },
 //    .................................
 } elseif (isset($_GET['unassignedWorks'])) {

@@ -1,5 +1,7 @@
 <?php
 
+require_once './Utils/util.php';
+
 
 class DBAdmin {
 
@@ -96,23 +98,21 @@ class DBAdmin {
             $query = "UPDATE peer_review_db.Admin SET Username=?, Password=?, AName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE AID=?;";
         }
         else{
-            http_response_code(406); // not acceptable code
-            echo json_encode(array("Error in DBAdmin.class! user is not found for update"));
+            responseWithError("User was not found for update", 406);
         }
 
         $conn = connect();
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $conn->close();
-            http_response_code(406); // not acceptable code
-            echo json_encode($stmt->error);
+            responseWithError("$stmt->error", 406);
+
         }
 
         $stmt->bind_param("ssssssss", $username, $password, $reviewerName, $credential, $roleType, $reviewerEmail, $isActive, $rid);
         if (!$stmt->execute()) {
             $conn->close();
-            http_response_code(406); // not acceptable code
-            echo json_encode($stmt->error);
+            responseWithError("$stmt->error", 406);
         }
 
         // close statement
@@ -164,8 +164,6 @@ class DBAdmin {
 
     // stores admin's pre-review in the table Admin_Review
     public static function preReview(AdminReview $adminReview) {
-        echo "\n$adminReview\n";
-
         $adminId = $adminReview->getAdminID();
         $workID = $adminReview->getWorkID();
         $dateReviewed = $adminReview->getDateReviewed();
@@ -177,19 +175,25 @@ class DBAdmin {
         $query = "INSERT INTO peer_review_db.Admin_Review (AdminID, WorkID, DateReviewed, Decision, RejectNote) VALUES(?,?,?,?,?); ";
 
         if (!$stmt = $conn->prepare($query)) {
-            die($conn->error);
+            responseWithError("$conn->error");
+            return;
         }
 
         $stmt->bind_param("sssss", $adminId, $workID, $dateReviewed, $decision, $rejectedNote);
         if (!$stmt->execute()) {
-            die($stmt->error);
+            responseWithError("$stmt->error");
+
+            return;
+//            die($stmt->error);
         }
 //        echo "Records inserted successfully.";
 
         // update status with a new value(e.g. admitted) in Work table
         $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?;";
         if (!$stmt = $conn->prepare($query)) {
-            die($conn->error);
+            http_response_code(400);
+            echo json_encode(array("message"=>"$conn->error"));
+//            die($conn->error);
         }
 
         $stmt->bind_param("ss", $decision, $workID);
@@ -254,7 +258,7 @@ class DBAdmin {
         }
 
         if ($conn->query($sql) === true) {
-            json_encode("Reviewer.class was deleted successfully.");
+            json_encode(array("message"=>"Reviewer.class was deleted successfully."));
             http_response_code(200);
 
         } else {
@@ -263,6 +267,8 @@ class DBAdmin {
 
         $conn->close();
     }
+
+
 
 }
 

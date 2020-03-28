@@ -2,6 +2,8 @@
 
 require_once 'dbinfo.inc';
 
+require_once './Utils/util.php';
+
 class DBReviewer {
 
     public static function getScorecard($workID, $reviewerID) {
@@ -142,15 +144,15 @@ class DBReviewer {
         $query = "INSERT INTO peer_review_db.Discussion (WorkID, ReviewerID, Message, DTime) VALUES(?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
-
         $stmt->bind_param("ssss", $msg->getWorkID(), $msg->getReviewerID(), $msg->getMessage(), $msg->getDateAndTime());
         if (!$stmt->execute()) {
+            echo "\nreviewHistory\n";
+
             $conn->close();
-            die($stmt->error);
+            responseWithError($stmt->error);
         }
 
-        echo "Records inserted successfully.";
-
+//        echo "Records inserted successfully.";
         // close statement
         $stmt->close();
 
@@ -187,7 +189,7 @@ class DBReviewer {
         }
 
 
-        echo "Records inserted successfully.";
+//        echo "Records inserted successfully.";
 
         // close statement
         $stmt->close();
@@ -206,7 +208,7 @@ class DBReviewer {
         $stmt = $conn->prepare($query);
 
 
-        echo "\nAAAAAA\n".$review->getReviewerID();
+//        echo "\nAAAAAA\n".$review->getReviewerID();
 
         $stmt->bind_param("sssss",$review->getWorkID(), $review->getReviewerID(),$review->getDateReviewed(),$review->getScore(),$review->getReviewerComment());
         if (!$stmt->execute()) {
@@ -214,7 +216,7 @@ class DBReviewer {
             die($stmt->error);
         }
 
-        echo "Records inserted successfully.";
+//        echo "Records inserted successfully.";
 
         // close statement
         $stmt->close();

@@ -93,11 +93,9 @@ class DBAdmin {
 
         if ($foundReviewer != null) {
             $query = "UPDATE peer_review_db.Reviewer SET Username=?, Password=?, RName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE RID=?;";
-        }
-        else if ($foundAdmin != null) {
+        } else if ($foundAdmin != null) {
             $query = "UPDATE peer_review_db.Admin SET Username=?, Password=?, AName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE AID=?;";
-        }
-        else{
+        } else {
             responseWithError("User was not found for update", 406);
         }
 
@@ -170,6 +168,14 @@ class DBAdmin {
         $decision = $adminReview->getDecision();
         $rejectedNote = $adminReview->getRejectNote();
 
+
+        // check whether the work has already been pre-reviewed in the database or not
+        // return an error message if the work with given workId is in the admin review database
+        $review = DB::select('SELECT * FROM peer_review_db.Admin_Review WHERE WorkID='.$workID);
+        if ($review != null) {
+            responseWithError("Work with id= ".$workID." was already reviewed. You cannot preview the same work twice!!!");
+
+        }
         //    dbAdmin_Review columns: AdminID, WorkID, DateReviewed, Decision, RejectNote
         $conn = connect();
         $query = "INSERT INTO peer_review_db.Admin_Review (AdminID, WorkID, DateReviewed, Decision, RejectNote) VALUES(?,?,?,?,?); ";
@@ -192,7 +198,7 @@ class DBAdmin {
         $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?;";
         if (!$stmt = $conn->prepare($query)) {
             http_response_code(400);
-            echo json_encode(array("message"=>"$conn->error"));
+            echo json_encode(array("message" => "$conn->error"));
 //            die($conn->error);
         }
 
@@ -258,17 +264,103 @@ class DBAdmin {
         }
 
         if ($conn->query($sql) === true) {
-            json_encode(array("message"=>"Reviewer.class was deleted successfully."));
+            json_encode(array("message" => "Reviewer.class was deleted successfully."));
             http_response_code(200);
 
         } else {
-            json_encode("ERROR: Could not able to execute $sql. ".$conn->error);
+            responseWithError("ERROR: Could not able to execute".$sql." ".$conn->error);
         }
 
         $conn->close();
     }
 
+    public static function getReviewInProgress() {
+        $conn = connect();
 
+        $query = "SELECT * FROM peer_review_db.ReviewInProgressView;";
+        $result = $conn->query($query);
+        if (!$result) {
+            $conn->close();
+            responseWithError("Errormessage:".$conn->error);
+
+        } elseif ($result->num_rows > 0) {
+
+            $workID = 0;
+            $isNewRow = false;
+            $reviewers = array();
+            $works[] = array();
+            $list = array();
+
+            while ($row = $result->fetch_array(MYSQLI_BOTH)) {
+                $list[] = $row;
+            }
+
+            $size = sizeof($list);
+            printf("Size %d \n", $size);
+
+            for ($index = 0; $index < $size; ++$index) {
+                                printf("%s \n", $list[$index]);
+            }
+
+//            while ($obj = $result->fetch_object()) {
+
+//                $title = $obj->Title;
+//                $URL = $obj->URL;
+//                $AuthorName = $obj->AuthorName;
+//                $DateAssigned = $obj->DateAssigned;
+//                $DueDate = $obj->DueDate;
+//                printf("%s \n", $obj->ReviewerName);
+//
+//                if ($workID !== $obj->WID) {
+//                    $isNewRow = true;
+//                    $workID = $obj->WID;
+//
+////                    $works[] = array(
+////                        'WID' => $wid,
+////                        'Title' => $title,
+////                        'URL' => $URL,
+////                        'AuthorName' => $AuthorName,
+////                        'DateAssigned' => $DateAssigned,
+////                        'DueDate' => $DueDate,
+////                        'Reviewers' => $reviewers
+////                    );
+//                    $works[] = array(
+//                        'WID' => $obj->WID,
+//                        'Title' => $obj->Title,
+//                        'URL' => $obj->URL,
+//                        'AuthorName' => $obj->AuthorName,
+//                        'DateAssigned' => $obj->DateAssigned,
+//                        'DueDate' => $obj->DueDate,
+//                        'Reviewers' => $reviewers
+//                    );
+//                    $reviewers = array();
+//
+//                    $works[] = array(
+//                        'WID' => $obj->WID,
+//                        'Title' => $obj->Title,
+//                        'URL' => $obj->URL,
+//                        'AuthorName' => $obj->AuthorName,
+//                        'DateAssigned' => $obj->DateAssigned,
+//                        'DueDate' => $obj->DueDate,
+//                        'Reviewers' => $reviewers
+//                    );
+//
+//
+//                } else {
+//                    $reviewers[] = array(
+//                        'ReviewerID' => $obj->ReviewerID,
+//                        'ReviewerName' => $obj->ReviewerName,
+//                    );
+//                }
+
+//            }
+            $result->close();
+        }
+
+        $conn->close();
+        echo json_encode($works);
+
+    }
 
 }
 

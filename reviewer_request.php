@@ -10,6 +10,9 @@ require_once "model/Review.php";
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
 
+require_once './Utils/util.php';
+
+
 // receives http get request with params: listAssignments, ReviewerID
 // responds back with a list of assignments for the given reviewerID
 // in json: [
@@ -134,9 +137,8 @@ if (isset($_GET['listAssignments'])) {
     //    },
     //        ............................
 } elseif (isset($_GET['getDiscussions'])) {
-//    echo "\ngetDiscussionsRequest\n";
-
     $WorkID = $_GET['WorkID'];
+    $RID = $_GET['RID'];
     $discussions = DB::select("SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;");
     echo json_encode($discussions);
 
@@ -178,7 +180,11 @@ if (isset($_GET['listAssignments'])) {
         $reviewerID = $_GET['ReviewerID'];
         echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView where ReviewerID=$reviewerID;"));
     }
-}
+} elseif (isset($_POST['postNewMessage'])) {
+    if (isset($_POST['WorkID']) && isset($_POST['ReviewerID']) && isset($_POST['Message']) && isset($_POST['DTime'])) {
+        DBReviewer::insertNewMessage(new Message($_POST['WorkID'], $_POST['ReviewerID'], $_POST['Message'], $_POST['DTime']));
 
+    }
+}
 
 ?>

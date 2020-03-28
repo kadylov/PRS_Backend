@@ -20,7 +20,13 @@ if (isset($_POST['postNewWork'])) {
 
 //     public function __construct($title="", $authorName="", $url="", $tags="", $dateWritten="", $dateSubmitted="", $retireFlag="no", $status="new")
     DBWork::insertWork($work);
-}
+} elseif (isset($_GET['getAllTags'])) {
 
+    $tags = DB::select('SELECT * FROM peer_review_db.Tag;');
+    echo json_encode($tags);
+
+//    DBWork::loadTags();
+
+}
 
 ?>

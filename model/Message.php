@@ -1,6 +1,9 @@
 <?php
 
 
+require_once './Utils/util.php';
+
+
 class Message {
 
     private $workID;
@@ -34,8 +37,8 @@ class Message {
      * @return Message
      */
     public function setWorkID($workID) {
-        if (empty($workID) || !is_int($workID)) {
-            die("\nError in Discussion.class! work id is undefined\n");
+        if (!validatesAsInt($workID)) {
+            responseWithError("Error in Discussion.class! work id is undefined");
         }
         $this->workID = $workID;
         return $this;
@@ -53,8 +56,8 @@ class Message {
      * @return Message
      */
     public function setReviewerID($fromReviewerID) {
-        if (empty($fromReviewerID) || !is_int($fromReviewerID)) {
-            die("\nError in Discussion.class! reviewer id is undefined\n");
+        if (!validatesAsInt($fromReviewerID)) {
+            responseWithError("Error in Discussion.class! reviewer id is undefined");
         }
         $this->fromReviewerID = $fromReviewerID;
         return $this;

@@ -32,8 +32,8 @@ require_once "db/DB.php";
 //]
 if (isset($_GET['incommingWorks'])) {
     $incommingWorks = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="new";');
-    echo json_encode($incommingWorks);
 
+    echo json_encode($incommingWorks);
 
 
 // receives http get request with params: allWorks
@@ -238,9 +238,14 @@ if (isset($_GET['incommingWorks'])) {
 //    },
 //    ......................
 } elseif (isset($_GET['getAssignedWorks'])) {
-    echo "\ngetAssignedWorks\n";
+//    echo "\ngetAssignedWorks\n";
 
-    $assignmentList = DB::select("SELECT * FROM peer_review_db.Assignment;");
+//    $assignmentList = DBAdmin::getReviewInProgress();
+
+//    $assignmentList = DB::select("SELECT WID, Title, URL, AuthorName, group_concat(ReviewerID) as ReviewerIDs, group_concat(ReviewerName) as ReviewerNames, group_concat(DueDate) as DueDate, group_concat(DateAssigned) as DateAssigned FROM peer_review_db.ReviewInProgressView
+//GROUP BY WID");
+
+    $assignmentList = DB::select("SELECT * FROM peer_review_db.ReviewInProgressView;");
     echo json_encode($assignmentList);
 
 // receives http get request with param getAssignedReviewers, WorkID

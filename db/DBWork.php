@@ -93,6 +93,29 @@ class DBWork {
     }
 
 
+    public static function loadTags(){
+        $conn = connect();
+
+        $query = "SELECT * FROM peer_review_db.Tag;";
+        $result = $conn->query($query);
+        if (!$result) {
+            $conn->close();
+            die("\nErrormessage:".$conn->error);
+
+        }
+        elseif ($result->num_rows > 0) {
+
+            while ($obj = $result->fetch_object()) {
+                echo $obj->Title;
+            }
+
+
+        } else $scorecard = null;
+
+        $conn->close();
+        return $scorecard;
+
+    }
 }
 
 ?>

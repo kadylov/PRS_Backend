@@ -14,9 +14,6 @@ require_once "db/DBWork.php";
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
 
-//var_dump($_GET);
-//var_dump($_POST);
-//var_dump($_POST['workID']);
 if (isset($_GET['scoredWorks'])) {
 
     $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView;');
@@ -35,24 +32,6 @@ if (isset($_GET['scoredWorks'])) {
     } else
         http_response_code(404);
 
-
-//    echo json_encode($user);
-
-//    if (DBWork::deleteWork(new Work($workID)) == true)
-//        http_response_code(202);
-//    else
-//        http_response_code(404);
-
 }
 
-
-#$work = new Work.class(1);
-//DBWork::deleteWork($work);
-
-
-// testing functionality for reviewer part
-//$r = new Reviewer.class("insert", "123", "insert", "academic", 1);
-//DBReviewer::selectAllReviewers();
-//DBReviewer::insertReviewer($r);
-//DBReviewer::deleteReviewer($r);
 ?>

@@ -30,12 +30,12 @@ if (isset($_POST['postNewWork'])) {
 
 
     $email = new Email();
-    $email->setRecepientName();
-    $email->setRecepientEmail();
-    $email->setSenderName();
-    $email->setSenderEmail();
-    $email->setSubject();
-    $email->setMessage();
+    $email->setRecepientName($authorName);
+    $email->setRecepientEmail($authorEmail);
+//    $email->setSenderName();
+//    $email->setSenderEmail();
+//    $email->setSubject();
+//    $email->setMessage();
 
     sendConfirmation($email);
 

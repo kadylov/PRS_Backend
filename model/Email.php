@@ -23,7 +23,7 @@ class Email{
     /**
      * @param mixed $recepientName
      */
-    public function setRecepientName($recepientName): void {
+    public function setRecepientName($recepientName) {
         $this->recepientName = $recepientName;
     }
 
@@ -37,7 +37,7 @@ class Email{
     /**
      * @param mixed $recepientEmail
      */
-    public function setRecepientEmail($recepientEmail): void {
+    public function setRecepientEmail($recepientEmail) {
         $this->recepientEmail = $recepientEmail;
     }
 
@@ -51,7 +51,7 @@ class Email{
     /**
      * @param mixed $senderName
      */
-    public function setSenderName($senderName): void {
+    public function setSenderName($senderName) {
         $this->senderName = $senderName;
     }
 

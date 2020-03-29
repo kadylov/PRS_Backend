@@ -1,11 +1,16 @@
 <?php
 
-//Import PHPMailer classes into the global namespace
-require './phpmailer/PHPMailer/src/PHPMailer.php';
-require './phpmailer/PHPMailer/src/SMTP.php';
-require './phpmailer/PHPMailer/src/Exception.php';
 
-require './model/Email.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+
+//Import PHPMailer classes into the global namespace
+require_once "./phpmailer/PHPMailer.php";
+require_once "./phpmailer/SMTP.php";
+//require "./phpmailer/Exception.php";
+
+require_once './model/Email.php';
 
 
 $host = 'smtp.gmail.com';

@@ -1,11 +1,17 @@
 <?php
 
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 //Import PHPMailer classes into the global namespace
-require_once './phpmailer/PHPMailer/src/PHPMailer.php';
-require_once './phpmailer/PHPMailer/src/SMTP.php';
-require_once './phpmailer/PHPMailer/src/Exception.php';
+require_once "./phpmailer/PHPMailer.php";
+require_once "./phpmailer/SMTP.php";
+require_once "./phpmailer/Exception.php";
 
 require_once './model/Email.php';
+
+require_once 'util.php';
 
 
 $host = 'smtp.gmail.com';
@@ -13,19 +19,9 @@ $username = 'prs.prs2020@gmail.com';
 $password = 'Senior2020';
 
 
-function sanitize_email($email) {
-    $field = filter_var($email, FILTER_SANITIZE_EMAIL);
-    if (filter_var($field, FILTER_VALIDATE_EMAIL)) {
-        return true;
-    } else {
-        return false;
-    }
-}
+function sendConfirmation($authorName, $authorEmail) {
 
-
-function sendConfirmation($email) {
-
-    $adminEmail = 'prs.prs2020@gmail.com';
+    $prsEmail = 'prs.prs2020@gmail.com';
 
 //    $email->getRecepientName();
 //    $email->getRecepientEmail();
@@ -41,8 +37,6 @@ function sendConfirmation($email) {
     global $username;
     global $password;
 
-    echo $username;
-
     $mail->Host = $host;
     $mail->Port = 587;
 
@@ -54,29 +48,21 @@ function sendConfirmation($email) {
 
     $mail->Username = $username;
     $mail->Password = $password;
-    $mail->setFrom($adminEmail);
-    $mail->addAddress($email->getRecepientEmail(), $email->getRecepientName());
+    $mail->setFrom($prsEmail, 'Peer Review System', false);
+    $mail->addAddress($authorEmail, $authorName);
     $mail->Subject = 'Work Submission Confirmation';
-    $mail->Body = '
-   <b>Dear Valued Author</b>,
-        <p>Thank you for using The Peer Review System to submit a work review request.</p>
-        <p>Your work submission has been received and will soon be proceeded.</p>';
-
+    $mail->Body = getAuthorConfirmTemplate();
     $mail->AltBody = 'Your work submission has been received and will soon be proceeded.';
 
 //send the message, check for errors
     if (!$mail->send()) {
-        echo 'Mailer Error: '.$mail->ErrorInfo;
-    } else {
-        echo 'Message sent!';
+        sendHttpResponseMsg(404, 'Mailer Error: '.$mail->ErrorInfo);
     }
 
 }
 
 
-function sendEmail($to, $subject, $message) {
-
-    $adminEmail = 'prs.prs2020@gmail.com';
+function sendEmail(Email $email, $repply = false) {
 
     $mail = new PHPMailer;
     $mail->isSMTP();
@@ -84,9 +70,6 @@ function sendEmail($to, $subject, $message) {
     global $host;
     global $username;
     global $password;
-
-    echo $username;
-
     $mail->Host = $host;
     $mail->Port = 587;
 
@@ -98,20 +81,65 @@ function sendEmail($to, $subject, $message) {
 
     $mail->Username = $username;
     $mail->Password = $password;
-    $mail->setFrom('farsh01@list.ru', 'Nikolai Solovey');
-    $mail->addReplyTo('farsh01@list.ru', 'Kim Chi');
-    $mail->addAddress($adminEmail);
-    $mail->Subject = 'PHPMailer GMail SMTP test';
-    $mail->Body = '<h1>Header</h1> <p>THis is the test message</p>';
-    $mail->AltBody = 'This is a plain-text message body';
+    $mail->setFrom($email->getSenderEmail(), $email->getSenderName());
+    if ($repply) {
+        $mail->addReplyTo($email->getSenderEmail(), $email->getSenderName());
+    }
+    $mail->addAddress($email->getRecepientEmail(), $email->getRecepientName());
+    $mail->Subject = $email->getSubject();
+    $mail->Body = $email->getMessage();
+    $mail->AltBody = $email->getMessage();
 
-//send the message, check for errors
+
     if (!$mail->send()) {
-        echo 'Mailer Error: '.$mail->ErrorInfo;
-    } else {
-        echo 'Message sent!';
+        sendHttpResponseMsg(404, 'Mailer Error: '.$mail->ErrorInfo);
     }
 
+}
+
+function getAuthorConfirmTemplate() {
+    return '<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <style>
+        body {
+            text-align: left;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #464646;
+            line-height: 1.5em;
+        }
+
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="mt-5">
+
+        <p>Dear Valued Author,</p>
+        <p>Thank you for using The Peer Review System to submit a work review request.</p>
+        <p> Your work submission has been received and will soon be proceeded.</p>
+
+    </div>
+</div>
+
+</body>
+</html>
+';
 }
 
 ?>

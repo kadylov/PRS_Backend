@@ -1,6 +1,7 @@
 <?php
 
 require_once 'dbinfo.inc';
+require_once './Utils/util.php';
 
 //require_once './model/Work.php';
 
@@ -17,6 +18,8 @@ class DBWork {
 
 
     static public function insertWork(Work $newWork) {
+
+        $workStoredFlag = true;
 
         $title = $newWork->getTitle();
         $authorName = $newWork->getAuthorName();
@@ -35,6 +38,7 @@ class DBWork {
         $stmt = $conn->prepare($query);
         $stmt->bind_param("sssssssss", $title, $url, $dateSubmitted, $dateWritten, $retireFlag, $status, $authorName, $email, $tags);
         if (!$stmt->execute()) {
+            $workStoredFlag = false;
             echo json_encode($stmt->error);
         }
 
@@ -43,6 +47,8 @@ class DBWork {
 
         // close connection
         $conn->close();
+
+        return $workStoredFlag;
 
     }
 

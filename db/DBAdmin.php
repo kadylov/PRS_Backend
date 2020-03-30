@@ -29,11 +29,12 @@ class DBAdmin {
         $stmt = $conn->prepare($query);
         $stmt->bind_param("sssssss", $username, $password, $reviewerName, $credential, $roleType, $email, $activeFlag);
         if (!$stmt->execute()) {
-            echo $stmt->error;
+//            echo $stmt->error;
+            sendHttpResponseMsg(404, 'Unable to create a user');
             $flag = false;
         }
 
-//        echo "Records inserted successfully.";
+        sendHttpResponseMsg(202, 'New user has been created successfully.'
 
         // close statement
         $stmt->close();
@@ -64,10 +65,11 @@ class DBAdmin {
 
         $stmt->bind_param("ssssss", $username, $password, $name, $credential, $roleType, $email);
         if (!$stmt->execute()) {
-            die($stmt->error);
+            sendHttpResponseMsg(404, 'Unable to create an admin');
+//            die($stmt->error);
         }
 
-        echo "Records inserted successfully.";
+        sendHttpResponseMsg(202, 'Admin has been created successfully.'
 
         // close statement
         $stmt->close();
@@ -96,21 +98,25 @@ class DBAdmin {
         } else if ($foundAdmin != null) {
             $query = "UPDATE peer_review_db.Admin SET Username=?, Password=?, AName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE AID=?;";
         } else {
-            responseWithError("User was not found for update", 406);
+            sendHttpResponseMsg(404, 'User was not found for update');
+//            responseWithError("User was not found for update", 406);
         }
 
         $conn = connect();
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $conn->close();
-            responseWithError("$stmt->error", 406);
+
+            sendHttpResponseMsg(404, 'Unable to update user');
+//            responseWithError("$stmt->error", 406);
 
         }
 
         $stmt->bind_param("ssssssss", $username, $password, $reviewerName, $credential, $roleType, $reviewerEmail, $isActive, $rid);
         if (!$stmt->execute()) {
             $conn->close();
-            responseWithError("$stmt->error", 406);
+            sendHttpResponseMsg(404, 'Invalid sql query');
+//            responseWithError("$stmt->error", 406);
         }
 
         // close statement
@@ -299,7 +305,7 @@ class DBAdmin {
             printf("Size %d \n", $size);
 
             for ($index = 0; $index < $size; ++$index) {
-                                printf("%s \n", $list[$index]);
+                printf("%s \n", $list[$index]);
             }
 
 //            while ($obj = $result->fetch_object()) {

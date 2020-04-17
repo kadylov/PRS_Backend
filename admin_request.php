@@ -223,7 +223,11 @@ if (isset($_GET['incommingWorks'])) {
 } elseif (isset($_GET['reviewersToAssign'])) {
 //    echo "\nreviewHistoryRequest\n";
 
-    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewsCountList");
+    $workID = $_GET['$workID'];
+
+//    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewersToAssignView1 WHERE (AssignedThisMonth=0 OR AssignedThisMonth is NULL) AND (WorkID!=4 OR WorkID IS NULL);");
+    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewersToAssignView1 WHERE (WorkID!=4 OR WorkID IS NULL);");
+//    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewsCountList");
     echo json_encode($reviewers);
 
 // recieve http get request with params: getAssignedWorks
@@ -275,16 +279,15 @@ if (isset($_GET['incommingWorks'])) {
 // creates a new assignment object and passes it to the function createNewAssignment. This function inserts the new
 // assignment into table named 'Assignment'
 // Note that dueDate and dateAssignment should be in YYYYMMDD format
-} elseif (isset($_POST['assignReviewers'])) {
-    echo "\nassignReviewers\n";
+} elseif (isset($_POST['assignReviewer'])) {
+//    echo "\nassignReviewers\n";
 
     $adminID = $_POST['adminID'];
     $reviewerID = $_POST['reviewerID'];
     $workID = $_POST['workID'];
     $dueDate = $_POST['dueDate'];
     $dateAssigned = $_POST['dateAssigned'];
-//    var_dump($reviewerID);
-    $assignment = new Assignment((int)$adminID, (int)$reviewerID, (int)$workID, $dateAssigned, $dueDate);
+    $assignment = new Assignment($adminID, $reviewerID, $workID, $dateAssigned, $dueDate);
     DBAdmin::createNewAssignment($assignment);
 
 } elseif (isset($_GET['getUsers'])) {
@@ -315,6 +318,11 @@ if (isset($_GET['incommingWorks'])) {
 //    echo "\ngetUsers\n";
 
     DBAdmin::deactivateUserById($_POST['id'], $_POST['roleId'], $_POST['activeStatus']);
+
+}elseif (isset($_POST['deactivateFromAssignment'])) {
+//    echo "\ngetUsers\n";
+
+    DBAdmin::deactivateFromAssignment($_POST['ReviewerID'], $_POST['WorkID']);
 
 }
 

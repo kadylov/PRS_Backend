@@ -8,6 +8,7 @@ class Email{
     private $senderEmail;
     private $subject;
     private $message;
+    private $canReply;
 
 
 
@@ -95,6 +96,20 @@ class Email{
      */
     public function setMessage($message) {
         $this->message = $message;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function canReply() {
+        return $this->canReply;
+    }
+
+    /**
+     * @param mixed $canReply
+     */
+    public function setReply($canReply) {
+        $this->canReply = $canReply;
     }
 
 

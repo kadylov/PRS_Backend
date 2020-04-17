@@ -82,7 +82,7 @@ function sendEmail(Email $email, $repply = false) {
     $mail->Username = $username;
     $mail->Password = $password;
     $mail->setFrom($email->getSenderEmail(), $email->getSenderName());
-    if ($repply) {
+    if ($email->canReply()=='1') {
         $mail->addReplyTo($email->getSenderEmail(), $email->getSenderName());
     }
     $mail->addAddress($email->getRecepientEmail(), $email->getRecepientName());

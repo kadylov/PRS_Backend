@@ -54,6 +54,28 @@ if (isset($_POST['postNewWork'])) {
 
 //    DBWork::loadTags();
 
-}
+} else if (isset($_GET['incommingWorks'])) {
+    $incommingWorks = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="new";');
 
+    echo json_encode($incommingWorks);
+
+
+} else if (isset($_GET['getWorksForPublic'])) {
+
+    $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView WHERE IsRetired="no";');
+    echo json_encode($works);
+
+} else if (isset($_GET['getAllWorks'])) {
+
+    $works = DB::select('SELECT * FROM peer_review_db.Work;');
+    echo json_encode($works);
+}
+else if (isset($_POST['publishWork'])) {
+
+    $wid = $_POST['WID'];
+    $status = $_POST['Publish'];
+
+    DBWork::publishWork($wid, $status);
+
+}
 ?>

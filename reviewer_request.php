@@ -10,7 +10,7 @@ require_once "model/Review.php";
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
 
-require_once './Utils/util.php';
+require_once 'Utils/util.php';
 
 
 // receives http get request with params: listAssignments, ReviewerID

@@ -19,6 +19,16 @@ class DB {
         return $result;
 
     }
+
+    public static function execute($query = "") {
+        $conn = connect();
+
+        if ($conn->query($query) === FALSE) {
+            echo "Error: ".$query."<br>".$conn->error;
+        }
+
+        $conn->close();
+    }
 }
 
 ?>

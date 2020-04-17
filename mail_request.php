@@ -10,7 +10,7 @@ require_once "db/DBWork.php";
 
 require_once 'Utils/mail.php';
 
-
+// receive message from contact page
 if (isset($_POST['contactMessage'])) {
 
     $admin = DB::select('SELECT AName, Email FROM peer_review_db.Admin WHERE AID=0;');
@@ -24,21 +24,10 @@ if (isset($_POST['contactMessage'])) {
         $email->setSenderEmail($_POST['senderEmail']);
         $email->setSubject($_POST['subject']);
         $email->setMessage($_POST['message']);
+        $email->setReply($_POST['canReply']);
 
-        sendEmail($email, true);
+        sendEmail($email);
     }
-
-
-
-
-
-    /*
-     *
-     *
-     * */
-
-
 }
-
 
 ?>

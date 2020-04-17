@@ -52,6 +52,35 @@ class DBWork {
 
     }
 
+    static public function publishWork($wid, $status) {
+
+        /*
+         * update Work Set Publish=1
+where WID = 1
+         * */
+
+        echo "aaa ".$wid;
+
+        $query = "UPDATE peer_review_db.Work SET Publish=? WHERE WID=?";
+        $conn = connect();
+        $stmt = $conn->prepare($query);
+
+        $stmt->bind_param("ss", $status, $wid);
+        if (!$stmt->execute()) {
+            $conn->close();
+            sendHttpResponseMsg(404, 'Invalid sql query');
+//            responseWithError("$stmt->error", 406);
+        }
+
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+
+    }
+
+
     public static function findWork(Work $work) {
 
         $id = (int)$work.getWid();

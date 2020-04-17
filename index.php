@@ -6,6 +6,7 @@ header("Access-Control-Allow-Methods: PUT, GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
 header("Content-Type: application/json; charset=UTF-8");
 
+require_once 'db/dbinfo.inc';
 
 require_once "model/Work.php";
 require_once "model/Reviewer.php";
@@ -13,6 +14,10 @@ require_once "model/Reviewer.php";
 require_once "db/DBWork.php";
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
+
+// report all occured error messages to the screen
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 if (isset($_GET['scoredWorks'])) {
 
@@ -31,7 +36,6 @@ if (isset($_GET['scoredWorks'])) {
         echo json_encode($user);
     } else
         http_response_code(404);
-
-}
+} 
 
 ?>

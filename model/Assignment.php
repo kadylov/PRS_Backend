@@ -1,5 +1,8 @@
 <?php
 
+require_once './Utils/util.php';
+
+
 //        AdminID, ReviewerID, WorkID, DateAssigned, DueDate
 class Assignment {
 
@@ -8,22 +11,25 @@ class Assignment {
     private $workID;
     private $dateAssigned;
     private $dueDate;
+    private $canReview;
 
     /**
      * Assignment constructor.
      * @param $adminID
-     * @param reviewerIDs
+     * @param $reviewerID
      * @param $workID
      * @param $dateAssigned
      * @param $dueDate
      */
 
-    public function __construct( $adminID = NULL, $reviewerID = NULL, $workID = NULL, $dateAssigned = "000000", $dueDate = "000000") {
+    public function __construct($adminID = NULL, $reviewerID = NULL, $workID = NULL, $dateAssigned = "000000", $dueDate = "000000") {
+        echo $adminID;
         $this->setAdminID($adminID);
         $this->setReviewerID($reviewerID);
         $this->setWorkID($workID);
         $this->dateAssigned = $dateAssigned;
         $this->dueDate = $dueDate;
+        $this->canReview = 1;
     }
 
     /**
@@ -36,10 +42,12 @@ class Assignment {
     /**
      * @param mixed $adminID
      */
-    public function setAdminID($adminID): void {
-        if (empty($adminID) || !is_int($adminID)) {
-            die("\nError in Assignment.class! admin id cannot be zero or empty\n");
+    public function setAdminID($adminID) {
+        if (!validatesAsInt($adminID)) {
+            responseWithError("adminID is undefined");
+            return;
         }
+
         $this->adminID = $adminID;
     }
 
@@ -53,10 +61,13 @@ class Assignment {
     /**
      * @param mixed reviewerIDs
      */
-    public function setReviewerID($reviewerID): void {
-        if (empty($reviewerID) && !is_int($reviewerID)) {
-            die("\nError in Assignment.class! reviewerID cannot be zero or empty\n");
+    public function setReviewerID($reviewerID) {
+
+        if (!validatesAsInt($reviewerID) && $reviewerID == 0) {
+            responseWithError("reviewerID is undefined");
+            return;
         }
+
         $this->reviewerID = $reviewerID;
     }
 
@@ -70,10 +81,11 @@ class Assignment {
     /**
      * @param mixed $workID
      */
-    public function setWorkID($workID): void {
+    public function setWorkID($workID) {
 
-        if (empty($workID) || !is_int($workID)) {
-            die("\nError in Assignment.class! work id is undefined\n");
+        if (!validatesAsInt($workID) && $workID == 0) {
+            responseWithError("workID is undefined");
+            return;
         }
 
         $this->workID = $workID;
@@ -89,7 +101,7 @@ class Assignment {
     /**
      * @param mixed $dateAssigned
      */
-    public function setDateAssigned($dateAssigned): void {
+    public function setDateAssigned($dateAssigned) {
         $this->dateAssigned = $dateAssigned;
     }
 
@@ -103,8 +115,22 @@ class Assignment {
     /**
      * @param mixed $dueDate
      */
-    public function setDueDate($dueDate): void {
+    public function setDueDate($dueDate) {
         $this->dueDate = $dueDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCanReview() {
+        return $this->canReview;
+    }
+
+    /**
+     * @param mixed $dueDate
+     */
+    public function setCanReview($canReview) {
+        $this->canReview = $canReview;
     }
 
 

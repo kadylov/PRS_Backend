@@ -29,7 +29,7 @@ function sendHttpResponseMsg(int $code = 200, string $message = '') {
         case 404:
             header('HTTP/1.1 404 Not Found');
             echo json_encode($message);
-            break;
+            exit;
     }
 
 }

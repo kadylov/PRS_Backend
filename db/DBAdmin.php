@@ -34,7 +34,7 @@ class DBAdmin {
             $flag = false;
         }
 
-        sendHttpResponseMsg(202, 'New user has been created successfully.'
+        sendHttpResponseMsg(202, 'New user has been created successfully.');
 
         // close statement
         $stmt->close();
@@ -69,7 +69,7 @@ class DBAdmin {
 //            die($stmt->error);
         }
 
-        sendHttpResponseMsg(202, 'Admin has been created successfully.'
+        sendHttpResponseMsg(202, 'Admin has been created successfully.');
 
         // close statement
         $stmt->close();
@@ -227,35 +227,57 @@ class DBAdmin {
 
     public static function createNewAssignment(Assignment $assignment) {
 
-        echo $assignment;
+//        echo $assignment;
         $adminID = $assignment->getAdminID();
         $reviewerID = $assignment->getReviewerID();
-        $WorkID = $assignment->getWorkID();
-        $DateAssigned = $assignment->getDateAssigned();
-        $DueDate = $assignment->getDueDate();
+        $workID = $assignment->getWorkID();
+        $dateAssigned = $assignment->getDateAssigned();
+        $dueDate = $assignment->getDueDate();
+        $canReviewStatus = $assignment->getCanReview();
 
 //        AdminID, ReviewerID, WorkID, DateAssigned, DueDate
         $conn = connect();
-        $query = "INSERT INTO peer_review_db.Assignment (AdminID, ReviewerID, WorkID, DateAssigned, DueDate) VALUES(?,?,?,?,?); ";
+        $query = "INSERT INTO peer_review_db.Assignment (AdminID, ReviewerID, WorkID, DateAssigned, DueDate, CanReview) VALUES(?,?,?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
 
-        $stmt->bind_param("sssss", $adminID, $reviewerID, $WorkID, $DateAssigned, $DueDate);
+        $stmt->bind_param("ssssss", $adminID, $reviewerID, $workID, $dateAssigned, $dueDate, $canReviewStatus);
         if (!$stmt->execute()) {
             die($stmt->error);
         }
 
-        echo "Records inserted successfully.";
+//        echo "Records inserted successfully.";
 
         // close statement
         $stmt->close();
 
         // close connection
         $conn->close();
-
-//        http_response_code(202);
-
     }
+
+    public static function deactivateFromAssignment($reviewerID, $workID) {
+        if ($reviewerID === null) {
+            die("\nError! Reviewer.class ID cannot be null\n");
+        }
+
+        if ($workID === null) {
+            die("\nError! Reviewer.class ID cannot be null\n");
+        }
+
+        $sql = "UPDATE  peer_review_db.Assignment SET CanReview=0 WHERE ReviewerID=$reviewerID AND WorkID=$workID";
+        $conn = connect();
+
+        if ($conn->query($sql) === true) {
+            json_encode(array("message" => "Reviewer.class was deleted successfully."));
+            http_response_code(200);
+
+        } else {
+            responseWithError("ERROR: Could not able to execute".$sql." ".$conn->error);
+        }
+
+        $conn->close();
+    }
+
 
     public static function deactivateUserById(int $id, int $roleId, int $activeStatus) {
         if ($id === null) {
@@ -308,66 +330,41 @@ class DBAdmin {
                 printf("%s \n", $list[$index]);
             }
 
-//            while ($obj = $result->fetch_object()) {
-
-//                $title = $obj->Title;
-//                $URL = $obj->URL;
-//                $AuthorName = $obj->AuthorName;
-//                $DateAssigned = $obj->DateAssigned;
-//                $DueDate = $obj->DueDate;
-//                printf("%s \n", $obj->ReviewerName);
-//
-//                if ($workID !== $obj->WID) {
-//                    $isNewRow = true;
-//                    $workID = $obj->WID;
-//
-////                    $works[] = array(
-////                        'WID' => $wid,
-////                        'Title' => $title,
-////                        'URL' => $URL,
-////                        'AuthorName' => $AuthorName,
-////                        'DateAssigned' => $DateAssigned,
-////                        'DueDate' => $DueDate,
-////                        'Reviewers' => $reviewers
-////                    );
-//                    $works[] = array(
-//                        'WID' => $obj->WID,
-//                        'Title' => $obj->Title,
-//                        'URL' => $obj->URL,
-//                        'AuthorName' => $obj->AuthorName,
-//                        'DateAssigned' => $obj->DateAssigned,
-//                        'DueDate' => $obj->DueDate,
-//                        'Reviewers' => $reviewers
-//                    );
-//                    $reviewers = array();
-//
-//                    $works[] = array(
-//                        'WID' => $obj->WID,
-//                        'Title' => $obj->Title,
-//                        'URL' => $obj->URL,
-//                        'AuthorName' => $obj->AuthorName,
-//                        'DateAssigned' => $obj->DateAssigned,
-//                        'DueDate' => $obj->DueDate,
-//                        'Reviewers' => $reviewers
-//                    );
-//
-//
-//                } else {
-//                    $reviewers[] = array(
-//                        'ReviewerID' => $obj->ReviewerID,
-//                        'ReviewerName' => $obj->ReviewerName,
-//                    );
-//                }
-
-//            }
             $result->close();
         }
 
         $conn->close();
         echo json_encode($works);
-
     }
 
+    static function getUnassignedWorks(){
+        $unasignedWorks = array();
+        // get all Works
+        $query = "SELECT WID, Title, URL, AuthorName, Status FROM peer_review_db.ReviewInProgressView GROUP BY WID";
+        $conn = connect();
+        $result = $conn->query($query);
+
+        if ($result->num_rows > 0) {
+            while ($work = $result->fetch_assoc()) {
+                $query2 = "SELECT ReviewerID, ReviewerName, Role, DateAssigned, DueDate FROM peer_review_db.ReviewInProgressView WHERE WID=".$work['WID'].";";
+                $result2 = $conn->query($query2);
+                if ($result2->num_rows > 0) {
+                    $reviewers = $result2->fetch_all();
+                    $work['Reviewers'] = $reviewers;
+//                $works['Reviewers']=$reviewers;
+                    array_push($unasignedWorks, $work);
+                }
+            }
+        }
+        else{
+
+        }
+        $conn->close();
+
+
+//    $works = DB::select($query);
+        echo json_encode($unasignedWorks);
+    }
 }
 
 ?>

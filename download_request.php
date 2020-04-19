@@ -18,6 +18,8 @@ $file = 'backup/prs_backup.sql';
 //$res = exec($mysqldump.' '.$command);
 //echo $mysqldump.' '.$command;
 
+
+
 // wait until the backup data is generated
 if (generateBackupFile('prs_backup')) {
 
@@ -50,11 +52,18 @@ else{
 function generateBackupFile($filename) {
     $statusFlag = false;
     if (!empty($filename)) {
-        $dir = dirname(__FILE__).'/backup/'.$filename.'.sql';
-        $configFile = dirname(__FILE__).'/backup/.dbCredential.cnf';
+//        $dir = dirname(__FILE__).'/backup/'.$filename.'.sql';
+//        $configFile = dirname(__FILE__).'/backup/.dbCredential.cnf';
 
-        $command = 'mysqldump --defaults-extra-file='.$configFile.' --insert-ignore=TRUE --tz-utc=FALSE --protocol=tcp --set-gtid-purged=OFF --default-character-set=utf8 --dump-date=FALSE --port=3306 --routines --no-create-info=TRUE --skip-triggers "peer_review_db" --result-file='.$dir.' 2>&1';
-        $res = shell_exec($command);
+        $dir1 = dirname(__FILE__).'/backup/';
+
+//        $mysqldump='/opt/bitnami/mysql/bin/mysqldump';
+//        $command = $mysqldump.' --defaults-extra-file='.$configFile.' --insert-ignore=TRUE --tz-utc=FALSE --protocol=tcp --set-gtid-purged=OFF --default-character-set=utf8 --dump-date=FALSE --port=3306 --routines --no-create-info=TRUE --skip-triggers "peer_review_db" --result-file='.$dir;
+
+        $old_path = getcwd();
+        chdir(dirname($dir1));
+        $output = shell_exec('./download.sh');
+        chdir($old_path);
 
         $statusFlag = true;
     }

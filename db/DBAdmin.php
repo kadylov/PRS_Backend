@@ -182,7 +182,7 @@ class DBAdmin {
             responseWithError("Work with id= ".$workID." was already reviewed. You cannot preview the same work twice!!!");
 
         }
-        //    dbAdmin_Review columns: AdminID, WorkID, DateReviewed, Decision, RejectNote
+        // save admin's prereview in the db
         $conn = connect();
         $query = "INSERT INTO peer_review_db.Admin_Review (AdminID, WorkID, DateReviewed, Decision, RejectNote) VALUES(?,?,?,?,?); ";
 
@@ -194,13 +194,11 @@ class DBAdmin {
         $stmt->bind_param("sssss", $adminId, $workID, $dateReviewed, $decision, $rejectedNote);
         if (!$stmt->execute()) {
             responseWithError("$stmt->error");
-
             return;
-//            die($stmt->error);
         }
-//        echo "Records inserted successfully.";
 
-        // update status with a new value(e.g. admitted) in Work table
+
+        // update status of the work with a new value(e.g. admitted) in Work table
         $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?;";
         if (!$stmt = $conn->prepare($query)) {
             http_response_code(400);

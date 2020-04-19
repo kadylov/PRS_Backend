@@ -62,12 +62,12 @@ if (isset($_POST['postNewWork'])) {
 
 } else if (isset($_GET['getWorksForPublic'])) {
 
-    $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView WHERE IsRetired="no";');
+    $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView WHERE IsRetired="no" and Publish=1;');
     echo json_encode($works);
 
 } else if (isset($_GET['getAllWorks'])) {
 
-    $works = DB::select('SELECT * FROM peer_review_db.Work;');
+    $works = DB::select("SELECT * FROM peer_review_db.Work where Status != 'new';");
     echo json_encode($works);
 }
 else if (isset($_POST['publishWork'])) {

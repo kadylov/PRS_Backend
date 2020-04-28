@@ -77,5 +77,12 @@ else if (isset($_POST['publishWork'])) {
 
     DBWork::publishWork($wid, $status);
 
+} else if (isset($_POST['updateWorkStatus'])) {
+
+    $wid = $_POST['WID'];
+    $status = $_POST['Status'];
+
+    DBWork::updateWorkStatus($wid, $status);
+
 }
 ?>

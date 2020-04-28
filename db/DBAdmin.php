@@ -322,7 +322,7 @@ class DBAdmin {
             }
 
             $size = sizeof($list);
-            printf("Size %d \n", $size);
+//            printf("Size %d \n", $size);
 
             for ($index = 0; $index < $size; ++$index) {
                 printf("%s \n", $list[$index]);

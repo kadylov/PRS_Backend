@@ -242,9 +242,6 @@ if (isset($_GET['incommingWorks'])) {
 //    },
 //    ......................
 } elseif (isset($_GET['getAssignedWorks'])) {
-//    echo "\ngetAssignedWorks\n";
-
-//    $assignmentList = DBAdmin::getReviewInProgress();
 
 //    $assignmentList = DB::select("SELECT WID, Title, URL, AuthorName, group_concat(ReviewerID) as ReviewerIDs, group_concat(ReviewerName) as ReviewerNames, group_concat(DueDate) as DueDate, group_concat(DateAssigned) as DateAssigned FROM peer_review_db.ReviewInProgressView
 //GROUP BY WID");

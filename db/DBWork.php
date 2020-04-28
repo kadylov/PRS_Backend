@@ -54,13 +54,6 @@ class DBWork {
 
     static public function publishWork($wid, $status) {
 
-        /*
-         * update Work Set Publish=1
-where WID = 1
-         * */
-
-        echo "aaa ".$wid;
-
         $query = "UPDATE peer_review_db.Work SET Publish=? WHERE WID=?";
         $conn = connect();
         $stmt = $conn->prepare($query);
@@ -151,6 +144,30 @@ where WID = 1
         return $scorecard;
 
     }
+
+    public static function updateWorkStatus($wid, $status){
+        $query = "UPDATE peer_review_db.Work SET Status=? WHERE WID=?";
+        $conn = connect();
+        $stmt = $conn->prepare($query);
+
+        $stmt->bind_param("ss", $status, $wid);
+        if (!$stmt->execute()) {
+            $stmt->close();
+            $conn->close();
+            sendHttpResponseMsg(404, 'Invalid sql query');
+        }
+
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+
+        sendHttpResponseMsg(200, 'OK');
+
+    }
 }
+
+
 
 ?>

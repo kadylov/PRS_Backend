@@ -10,6 +10,11 @@ require_once "db/DBWork.php";
 
 require_once 'Utils/mail.php';
 
+
+// report all occured error messages to the screen
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // receive message from contact page
 if (isset($_POST['contactMessage'])) {
 
@@ -28,6 +33,20 @@ if (isset($_POST['contactMessage'])) {
 
         sendEmail($email);
     }
+
+} else if (isset($_POST['workStatusReport'])){
+
+    $email = new Email();
+    $email->setRecepientName($_POST['recepientName']);
+    $email->setRecepientEmail($_POST['recepientEmail']);
+    $email->setSenderName($_POST['senderName']);
+    $email->setSenderEmail($_POST['senderEmail']);
+    $email->setSubject($_POST['subject']);
+    $email->setMessage($_POST['message']);
+    $email->setReply($_POST['canReply']);
+
+    sendEmail($email);
+
 }
 
 ?>

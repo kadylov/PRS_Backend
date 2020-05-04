@@ -33,6 +33,8 @@ if (isset($_GET['scoredWorks'])) {
     $user = DB::select($query);
 
     if ($user != null) {
+        $user[0]['username']="";
+        $user[0]['password']="";
         echo json_encode($user);
     } else
         http_response_code(404);

@@ -2,6 +2,10 @@
 
 require_once 'Utils/util.php';
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE');
+header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
+
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -24,9 +28,7 @@ $file = 'backup/prs_backup.sql';
 if (generateBackupFile('prs_backup')) {
 
     if (file_exists($file)) {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE');
-        header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
+
 
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');

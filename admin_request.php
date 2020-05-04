@@ -53,7 +53,7 @@ if (isset($_GET['incommingWorks'])) {
 //    },
 //  ...................................................
 //]
-}elseif(isset($_GET['allWorks'])){
+} elseif (isset($_GET['allWorks'])) {
     $works = DB::select('SELECT * FROM peer_review_db.Work');
     echo json_encode($works);
 
@@ -129,7 +129,7 @@ if (isset($_GET['incommingWorks'])) {
     $user->setRid((int)$_POST["ID"]);
 
 
-    DBAdmin::updateUser($user, $_POST["oldUsername"],$_POST["oldEmail"]);
+    DBAdmin::updateUser($user, $_POST["oldUsername"], $_POST["oldEmail"]);
     http_response_code(200);
 
 
@@ -163,7 +163,7 @@ if (isset($_GET['incommingWorks'])) {
 //]
 
 } elseif (isset($_GET['rejectedWork'])) {
-   // echo "\nrejectedWorkRequest\n";
+    // echo "\nrejectedWorkRequest\n";
 
     $works = DB::select('SELECT * FROM peer_review_db.RejectedWorkView;');
     echo json_encode($works);
@@ -316,12 +316,23 @@ if (isset($_GET['incommingWorks'])) {
 
     DBAdmin::deactivateUserById($_POST['id'], $_POST['roleId'], $_POST['activeStatus']);
 
-}elseif (isset($_POST['deactivateFromAssignment'])) {
-//    echo "\ngetUsers\n";
+} elseif (isset($_POST['deactivateFromAssignment'])) {
 
     DBAdmin::deactivateFromAssignment($_POST['ReviewerID'], $_POST['WorkID']);
 
-}
+} elseif (isset($_GET['getAllAdminReviews'])) {
 
+    $workID = $_GET['WID'];
+
+    if (isset($workID) && !empty($workID)) {
+
+        DB::select("SELECT * FROM peer_review_db.AdminReviewsView WHERE WorkID=".$workID.";");
+    } else {
+        DB::select("SELECT * FROM peer_review_db.AdminReviewsView");
+
+    }
+
+
+}
 
 ?>

@@ -52,7 +52,7 @@ function sendConfirmation($authorName, $authorEmail) {
     $mail->addAddress($authorEmail, $authorName);
     $mail->Subject = 'Work Submission Confirmation';
     $mail->Body = getAuthorConfirmTemplate();
-    $mail->AltBody = 'Your work submission has been received and will soon be proceeded.';
+    $mail->AltBody = 'Your work submission has been received and will soon be processed.';
 
 //send the message, check for errors
     if (!$mail->send()) {
@@ -132,7 +132,7 @@ function getAuthorConfirmTemplate() {
 
         <p>Dear Valued Author,</p>
         <p>Thank you for using The Peer Review System to submit a work review request.</p>
-        <p> Your work submission has been received and will soon be proceeded.</p>
+        <p> Your work submission has been received and will soon be processed.</p>
 
     </div>
 </div>

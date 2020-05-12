@@ -4,6 +4,7 @@ require_once 'dbinfo.inc';
 
 require_once './Utils/util.php';
 
+
 class DBReviewer {
 
     public static function getScorecard($workID, $reviewerID) {
@@ -20,14 +21,13 @@ class DBReviewer {
         $scorecard = null;
 
 //        $query = "SELECT * FROM peer_review_db.ScorecardView WHERE WorkID='$workID' AND ReviewerID='$reviewerID';";
-        $query = "SELECT * FROM peer_review_db.NewScorecardView WHERE WorkID=$workID AND ReviewerID=$reviewerID;";
+        $query = "SELECT RubricID, Score FROM peer_review_db.ScorecardView WHERE WorkID=$workID AND ReviewerID=$reviewerID;";
         $result = $conn->query($query);
         if (!$result) {
             $conn->close();
             die("\nErrormessage:".$conn->error);
 
-        }
-        elseif ($result->num_rows > 0) {
+        } elseif ($result->num_rows > 0) {
 //            $result = $result->fetch_all(MYSQLI_ASSOC);
 //            $result = $result->fetch_array(MYSQLI_ASSOC);
 
@@ -44,16 +44,21 @@ class DBReviewer {
             $scorecard->setReviewerName($obj->ReviewerName);
             $scorecard->setRoleId((int)$obj->RoleId);
             $scorecard->setRoleName($obj->RoleName);
-            $rubric["$obj->RubricID"] = $obj->RubricText;
-            $scores["$obj->RubricID"] = $obj->Score;
-            $scorecard->setCanScore("$obj->CanScore");
 
-//            echo $scorecard;
-
-
-            while ($obj = $result->fetch_object()) {
+            if (!empty($obj->RubricID)) {
                 $rubric["$obj->RubricID"] = $obj->RubricText;
                 $scores["$obj->RubricID"] = $obj->Score;
+                $scorecard->setCanScore("$obj->CanScore");
+            }
+
+            while ($obj = $result->fetch_object()) {
+
+                if (!empty($obj->RubricID)) {
+                    $rubric["$obj->RubricID"] = $obj->RubricText;
+                    $scores["$obj->RubricID"] = $obj->Score;
+                }
+
+
             }
 
             $scorecard->setRubric($rubric);
@@ -73,7 +78,7 @@ class DBReviewer {
         echo "\nNew Scorecard\n";
         $conn = connect();
         $result = $conn->query("SELECT * FROM peer_review_db.Rubric;");
-        if (!$result){
+        if (!$result) {
             $conn->close();
             die("\nErrormessage:".$conn->error);
 
@@ -88,78 +93,34 @@ class DBReviewer {
         return $rubricText;
 
 
-//        printf("\n%s\n", json_encode("rubric", $scorecard->getRubricText()));
-//        $scorecard->setRubricText($rubricText);
     }
 
-//    // return all reviewer's reviews as an array
-//    public static function getReviewHistory($reviewerID) {
-//        $conn = connect();
-//
-//        if ($reviewerID == 0 || $reviewerID == null || $reviewerID == "") {
-//            die("\nError! reviewerID id cannot be zero or null\n");
-//        }
-////        WorkID, ReviewerID, DateReviewed, Score, ReviewerComment
-//        $query = "SELECT * FROM peer_review_db.Reviews_History WHERE ReviewerID=$reviewerID;";
-//        $result = $conn->query($query);
-//
-//        if (!$result)
-//            die("\nErrormessage:".$conn->error);
-//
-//        $reviewHistory = array();
-//        if ($result->num_rows > 0) {
-//            $reviewHistory = $result->fetch_all(MYSQLI_ASSOC);
-//        }
-//
-//        $conn->close();
-//        return $reviewHistory;
-//    }
-
-//    public static function getDiscussionHistory($WorkID) {
-//        $conn = connect();
-//
-//        if ($WorkID == 0 || $WorkID == null || $WorkID == "") {
-//            die("\nError! WorkID id cannot be zero or null\n");
-//        }
-//
-//        $query = "SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;";
-//        echo $query;
-//        $result = $conn->query($query);
-//        if (!$result)
-//            die("\nErrormessage:".$conn->error);
-//
-//        $discussion = array();
-//        if ($result->num_rows > 0) {
-//            $discussion = $result->fetch_all(MYSQLI_ASSOC);
-//        }
-//
-//        $conn->close();
-//        return $discussion;
-//    }
 
 
     public static function insertNewMessage(Message $msg) {
+
+
+        $wid = $msg->getWorkID();
+        $rid = $msg->getReviewerID();
+        $message = $msg->getMessage();
+        $dtime = $msg->getDateAndTime();
 
         $conn = connect();
         $query = "INSERT INTO peer_review_db.Discussion (WorkID, ReviewerID, Message, DTime) VALUES(?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
-        $stmt->bind_param("ssss", $msg->getWorkID(), $msg->getReviewerID(), $msg->getMessage(), $msg->getDateAndTime());
+        $stmt->bind_param("ssss", $wid, $rid, $message, $dtime);
         if (!$stmt->execute()) {
-            echo "\nreviewHistory\n";
-
             $conn->close();
             responseWithError($stmt->error);
         }
 
-//        echo "Records inserted successfully.";
         // close statement
         $stmt->close();
 
         // close connection
         $conn->close();
 
-//        http_response_code(202);
 
     }
 
@@ -185,9 +146,7 @@ class DBReviewer {
                 $conn->close();
                 die($stmt->error);
             }
-
         }
-
 
 //        echo "Records inserted successfully.";
 
@@ -200,20 +159,57 @@ class DBReviewer {
 
     }
 
+    public static function saveScorecard($scorecard) {
+
+        $conn = connect();
+        $workID = $scorecard['WID'];
+        $reviewerID = $scorecard['ReviewerID'];
+        $canScore = 0;
+
+        //        WorkID, RubricID, Score, ReviewerID, canScore
+        $query = "INSERT INTO peer_review_db.Scorecard (WorkID, RubricID, Score, ReviewerID, canScore)"
+            ." VALUES(?,?,?,?,?); ";
+
+        $stmt = $conn->prepare($query);
+
+        for ($rubricID = 1; $rubricID <= 12; $rubricID++) {
+            $score = (int)$scorecard["$rubricID"];
+            $stmt->bind_param("sssss", $workID, $rubricID, $score, $reviewerID, $canScore);
+
+            if (!$stmt->execute()) {
+                $conn->close();
+                sendHttpResponseMsg(404, 'Unable to save the scorecard: '.$stmt->error);
+            }
+        }
 
 
+        sendHttpResponseMsg(200, 'Scorecard sucessfully saved.');
+        // close statement
+        $stmt->close();
+
+        // close connection
+        $conn->close();
+        return true;
+    }
+
+
+    // add reviewer review to review history
     public static function saveReview(Review $review) {
+
+        $workID = $review->getWorkID();
+        $reviewerID = $review->getReviewerID();
+        $dateReviewed = $review->getDateReviewed();
+        $score = $review->getScore();
+        $reviewComment = $review->getReviewerComment();
+
         $conn = connect();
         $query = "INSERT INTO peer_review_db.Reviews_History (WorkID, ReviewerID, DateReviewed, Score,ReviewerComment) VALUES(?,?,?,?,?); ";
         $stmt = $conn->prepare($query);
 
-
-//        echo "\nAAAAAA\n".$review->getReviewerID();
-
-        $stmt->bind_param("sssss",$review->getWorkID(), $review->getReviewerID(),$review->getDateReviewed(),$review->getScore(),$review->getReviewerComment());
+        $stmt->bind_param("sssss", $workID, $reviewerID, $dateReviewed, $score, $reviewComment);
         if (!$stmt->execute()) {
             $conn->close();
-            die($stmt->error);
+            sendHttpResponseMsg(404, 'Unable to save the scorecard: '.$stmt->error);
         }
 
 //        echo "Records inserted successfully.";
@@ -223,8 +219,6 @@ class DBReviewer {
 
         // close connection
         $conn->close();
-
-//        http_response_code(202);
     }
 
 }

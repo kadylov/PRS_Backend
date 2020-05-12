@@ -326,9 +326,9 @@ if (isset($_GET['incommingWorks'])) {
 
     if (isset($workID) && !empty($workID)) {
 
-        DB::select("SELECT * FROM peer_review_db.AdminReviewsView WHERE WorkID=".$workID.";");
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.AdminReviewsView WHERE WorkID=".$workID.";"));
     } else {
-        DB::select("SELECT * FROM peer_review_db.AdminReviewsView");
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.AdminReviewsView"));
 
     }
 

@@ -13,6 +13,11 @@ require_once "db/DB.php";
 require_once 'Utils/util.php';
 
 
+// report all occured error messages to the screen
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
 // receives http get request with params: listAssignments, ReviewerID
 // responds back with a list of assignments for the given reviewerID
 // in json: [
@@ -33,70 +38,109 @@ if (isset($_GET['listAssignments'])) {
     if (isset($_GET['ReviewerID'])) {
 
         $reviewerID = $_GET['ReviewerID'];
-        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=$reviewerID;"));
+        echo json_encode(DB::select("SELECT * FROM peer_review_db.ReviewerAssignmentsView WHERE ReviewerID=$reviewerID AND CanReview=1;"));
     }
 
-    // receives http get request with params: scorecard, WID, ReviewerID
+    // receives http get request with params: getScorecardForWork, WID, ReviewerID
     // responds back with the current scorecard and scores that the reviewer has been scoring but
-    // did not finish it for workID
+    // did not finish, or he reviewer finished for workID
     // in json: [
-//    Array{
-//        "WorkID": 4,
-//    "Title": "Can you measure the ROI of your social media marketing?",
-//    "URL": "https://www.researchgate.net/publication/228237594_Can_You_Measure_the_ROI_of_Your_Social_Media_Marketing",
-//    "ReviewerID": 1,
-//    "ReviewerName": "Melissa Klein",
-//    "RoleId": 1,
-//    "RoleName": 1,
-//    "Rubric": {
-//            "1": "Goal Setting and Measurement are Fundamental to Communication\nand Public Relations",
-//        "2": "Measuring Communication Outcomes is Recommended Versus Only\nMeasuring Outputs",
-//        "3": "The Effect on Organizational Performance Can and Should Be\nMeasured Where Possible",
-//        "4": "Measurement and Evaluation Require Both Qualitative and\nQuantitative Methods",
-//        "5": "AVEs are not the Value of Communications",
-//        "6": "Social Media Can and Should be Measured Consistently with Other\nMedia Channels",
-//        "7": "Measurement and Evaluation Should be Transparent, Consistent and\nValid"
-//    },
-//    "Scores": {
+//    [
+//    {
+//        "WorkID": "4",
+//        "Title": "Can you measure the ROI of your social media marketing?",
+//        "URL": "https://www.researchgate.net/publication/228237594_Can_You_Measure_the_ROI_of_Your_Social_Media_Marketing",
+//        "ReviewerID": "2",
+//        "canScore": "1",
+//        "Scorecard": {
 //            "1": "4",
-//        "2": "4",
-//        "3": "4",
-//        "4": "4",
-//        "5": "4",
-//        "6": "4",
-//        "7": "4"
-//    },
-//    "CanScore": "0"
-//}
+//            "2": "4",
+//            "3": "4",
+//            "4": "4",
+//            "5": "4",
+//            "6": "4",
+//            "7": "4",
+//            "8": "4",
+//            "9": "4",
+//            "10": "4",
+//            "11": "4",
+//            "12": "4"
+//        }
+//    }
+//]
 } elseif (isset($_GET['getScorecardForWork'])) {
-//    echo "\nscorecardRequest: ".$_GET['WID'];
+
+    $workID = $_GET["WID"];
+    $reviewerID = $_GET["ReviewerID"];
+
+    $assignment = DB::select("SELECT WorkID, Title, URL, ReviewerID, canScore FROM peer_review_db.ScorecardView WHERE WorkID=".$workID." AND ReviewerID=".$reviewerID." GROUP BY WorkID;");
+    if (empty($assignment)) {
+        return;
+    }
 
 
-    // gets current scorecard of the reviewerID
-    // if the scorecard is not found, returns http error code 404(e.g. Not found)
-    $scorecard = DBReviewer::getScorecard($_GET["WID"], $_GET["ReviewerID"]);
-    if ($scorecard != null)
-        echo json_encode($scorecard);
-    else
-        http_response_code(404); // respond with http code "404: not found"
+    $response = DB::select("SELECT RubricID, Score FROM peer_review_db.ScorecardView WHERE WorkID=".$workID." AND ReviewerID=".$reviewerID.";");
 
+    $rubricScore = array();
+
+    foreach($response as $rs){
+        $rubricScore[$rs['RubricID']] = $rs['Score'];
+    }
+
+    $assignment[0]['Scorecard']= $rubricScore;
+
+
+    echo json_encode($assignment);
 
 //  receives http post request with params: saveScorecard, rubricID as an array, scores as an array,reviewerID
 //  receives Post
 } elseif (isset($_POST['saveScorecard'])) {
 
-    $rubricIDs_array = $_POST['rubricID'];
-    $scores_array = $_POST['scores'];
-    $workID = $_POST['workID'];
-    $reviewerID = $_POST['reviewerID'];
+    $reviewerID = $_POST['ReviewerID'];
+    $workID = $_POST['WID'];
 
-    $scorecard = new Scorecard();
-    $scorecard->setRubric($rubricIDs_array);
-    $scorecard->setScore($scores_array);
-    $scorecard->setWorkID((int)$workID);
-    $scorecard->setReviewerID((int)$reviewerID);
+    $q1Value = $_POST['q1Value'];
+    $q2Value = $_POST['q2Value'];
+    $q3Value = $_POST['q3Value'];
+    $q4Value = $_POST['q4Value'];
+    $q5Value = $_POST['q5Value'];
+    $q6Value = $_POST['q6Value'];
+    $q7Value = $_POST['q7Value'];
+    $q8Value = $_POST['q8Value'];
+    $q9Value = $_POST['q9Value'];
+    $q10Value = $_POST['q10Value'];
+    $q11Value = $_POST['q11Value'];
+    $q12Value = $_POST['q12Value'];
+    $totalScore = $_POST['totalScore'];
 
-    DBReviewer::saveScores($scorecard);
+    $scorecard = array(
+        "WID" => $workID,
+        "ReviewerID" => $reviewerID,
+        "1" => $q1Value,
+        "2" => $q2Value,
+        "3" => $q3Value,
+        "4" => $q4Value,
+        "5" => $q5Value,
+        "6" => $q6Value,
+        "7" => $q7Value,
+        "8" => $q8Value,
+        "9" => $q9Value,
+        "10" => $q10Value,
+        "11" => $q11Value,
+        "12" => $q12Value,
+    );
+
+    // if the scorecard successfully stored in the database, then update review history table
+    // and update CanReview status on Assignment table
+    if (DBReviewer::saveScorecard($scorecard)) {
+
+        // current date
+        $today = date("Ymd");
+        DBReviewer::saveReview(new Review((int)$workID, (int)$reviewerID, $today, $totalScore, ""));
+
+        DB::execute("UPDATE peer_review_db.Assignment SET CanReview=0 WHERE ReviewerID=$reviewerID AND WorkID=$workID");
+
+    }
 
 
 //     receives http get request with params: reviewHistory, ReviewerID
@@ -138,7 +182,7 @@ if (isset($_GET['listAssignments'])) {
     //        ............................
 } elseif (isset($_GET['getDiscussions'])) {
     $WorkID = $_GET['WorkID'];
-    $RID = $_GET['RID'];
+//    $RID = $_GET['RID'];
     $discussions = DB::select("SELECT * FROM peer_review_db.DiscussionView WHERE WorkID=$WorkID;");
     echo json_encode($discussions);
 
@@ -182,6 +226,13 @@ if (isset($_GET['listAssignments'])) {
     }
 } elseif (isset($_POST['postNewMessage'])) {
     if (isset($_POST['WorkID']) && isset($_POST['ReviewerID']) && isset($_POST['Message']) && isset($_POST['DTime'])) {
+
+//        $wid = $_POST['WorkID'];
+//        $rid = $_POST['ReviewerID'];
+//        $msg = $_POST['Message'];
+//        $dtime = $_POST['DTime'];
+
+
         DBReviewer::insertNewMessage(new Message($_POST['WorkID'], $_POST['ReviewerID'], $_POST['Message'], $_POST['DTime']));
 
     }

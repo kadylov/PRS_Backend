@@ -73,13 +73,13 @@ if (isset($_GET['listAssignments'])) {
     $workID = $_GET["WID"];
     $reviewerID = $_GET["ReviewerID"];
 
-    $assignment = DB::select("SELECT WorkID, Title, URL, ReviewerID, canScore FROM peer_review_db.ScorecardView WHERE WorkID=".$workID." AND ReviewerID=".$reviewerID." GROUP BY WorkID;");
+    $assignment = DB::select("SELECT WID, Title, URL, ReviewerID, canScore FROM peer_review_db.ScorecardView WHERE WID=".$workID." AND ReviewerID=".$reviewerID." GROUP BY WID;");
     if (empty($assignment)) {
         return;
     }
 
 
-    $response = DB::select("SELECT RubricID, Score FROM peer_review_db.ScorecardView WHERE WorkID=".$workID." AND ReviewerID=".$reviewerID.";");
+    $response = DB::select("SELECT RubricID, Score FROM peer_review_db.ScorecardView WHERE WID=".$workID." AND ReviewerID=".$reviewerID.";");
 
     $rubricScore = array();
 

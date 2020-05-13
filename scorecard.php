@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
     if ($_GET['getReviewersScorecard']) {
 
-        $query = "SELECT WID, Title, URL, Status, AuthorName FROM peer_review_db.ScorecardView GROUP BY WID";
+        $query = "SELECT WID, Title, URL, Status, AuthorName FROM peer_review_db.ScorecardView WHERE Status='scored' GROUP BY WID";
 
 
         if (isset($_GET['WID']) && !empty($_GET['WID'])) {
@@ -45,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
                 $work['Scorecards'] = array();
 
                 // get group of reviewers for the work
-                $query2 = "SELECT ReviewerID, ReviewerName, Credential, RoleId, IsActive, canScore FROM peer_review_db.ScorecardView where WID=".$work['WID']." group by ReviewerID;";
+                $query2 = "SELECT ReviewerID, ReviewerName, Credential, RoleId, RoleType, IsActive, canScore FROM peer_review_db.ScorecardView where WID=".$work['WID']." group by ReviewerID;";
                 $reviewers = $conn->query($query2);
                 if ($reviewers->num_rows > 0) {
 

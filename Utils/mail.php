@@ -23,13 +23,6 @@ function sendConfirmation($authorName, $authorEmail) {
 
     $prsEmail = 'prs.prs2020@gmail.com';
 
-//    $email->getRecepientName();
-//    $email->getRecepientEmail();
-//    $email->getSenderName();
-//    $email->getSenderEmail();
-//    $email->getSubject();
-//    $email->getMessage();
-
     $mail = new PHPMailer;
     $mail->isSMTP();
 
@@ -141,5 +134,52 @@ function getAuthorConfirmTemplate() {
 </html>
 ';
 }
+
+
+function getNotificationForReviewerTemplate($dueDate) {
+    return '<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <style>
+        body {
+            text-align: left;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            color: #464646;
+            line-height: 1.5em;
+        }
+
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .mt-5 {
+            margin-top: 5px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="mt-5">
+
+        <p>Dear Valued Reviewer,</p>
+        <p>You have a new assignment to review.</p>
+        <p>Due date for review is '.$dueDate.'</p>
+
+    </div>
+</div>
+
+</body>
+</html>
+';
+}
+
 
 ?>

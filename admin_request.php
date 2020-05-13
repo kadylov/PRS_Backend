@@ -223,10 +223,10 @@ if (isset($_GET['incommingWorks'])) {
 } elseif (isset($_GET['reviewersToAssign'])) {
 //    echo "\nreviewHistoryRequest\n";
 
-    $workID = $_GET['$workID'];
+    $workID = $_GET['workID'];
 
 //    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewersToAssignView1 WHERE (AssignedThisMonth=0 OR AssignedThisMonth is NULL) AND (WorkID!=4 OR WorkID IS NULL);");
-    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewersToAssignView1 WHERE (WorkID!=4 OR WorkID IS NULL);");
+    $reviewers = DB::select('SELECT * FROM peer_review_db.ReviewersToAssignView1 WHERE WorkID!='.$workID);
 //    $reviewers = DB::select("SELECT * FROM peer_review_db.ReviewsCountList");
     echo json_encode($reviewers);
 

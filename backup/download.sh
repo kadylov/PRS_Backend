@@ -1,7 +1,6 @@
 #!/bin/bash
 
-dir=`echo $PWD`'/backup/prs_backup.sql'
-
+dir=`echo $PWD`'/prs_backup.sql'
 
 host='ls-a1f8ce36f06eeb4f03f53664d8911745db5895f4.cn5ycdfnko6g.us-east-1.rds.amazonaws.com'
 user='dbmasteruser'

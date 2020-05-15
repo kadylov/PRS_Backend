@@ -10,6 +10,9 @@ require_once "db/DBWork.php";
 require_once 'Utils/mail.php';
 require_once 'Utils/util.php';
 
+
+// receive author submission and then store it to the database
+// then notify admins of the system about incoming work
 if (isset($_POST['postNewWork'])) {
 
     $authorEmail = $_POST['email'];
@@ -46,29 +49,33 @@ if (isset($_POST['postNewWork'])) {
         sendHttpResponseMsg(404, 'Error! Your Work submission has not saved. Please contact a system admin.');
     }
 
-
+// receives request to submit tags from the database
 } elseif (isset($_GET['getAllTags'])) {
 
     $tags = DB::select('SELECT * FROM peer_review_db.Tag;');
     echo json_encode($tags);
 
-//    DBWork::loadTags();
-
+// receives request to submit all incoming works for admin pre review
 } else if (isset($_GET['incommingWorks'])) {
     $incommingWorks = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="new";');
 
     echo json_encode($incommingWorks);
 
-
+// receive request to submit all works for public view
 } else if (isset($_GET['getWorksForPublic'])) {
 
     $works = DB::select('SELECT * FROM peer_review_db.ScoredWorksView WHERE Publish=1');
     echo json_encode($works);
 
+// receive request to submit all works from the database
+// except incoming works. This request comes from admin side when admin clicks on "All Works" tab on the left menu
 } else if (isset($_GET['getAllWorks'])) {
 
     $works = DB::select("SELECT * FROM peer_review_db.Work where Status != 'new';");
     echo json_encode($works);
+
+// receives request to update work's publish flag in the database.
+// The request comes from admin side when admin slides one of the sliders in "All Works" page
 } else if (isset($_POST['publishWork'])) {
 
     $wid = $_POST['WID'];
@@ -93,6 +100,7 @@ if (isset($_POST['postNewWork'])) {
 }
 
 // email the summary to the author
+// it is called when the server receives "updateWorkStatus" request
 function sendWorkSummary($wid) {
     $query = "SELECT * FROM peer_review_db.SummaryView where WorkID=".$wid.";";
 

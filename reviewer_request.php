@@ -113,6 +113,13 @@ if (isset($_GET['listAssignments'])) {
     $q12Value = $_POST['q12Value'];
     $totalScore = $_POST['totalScore'];
 
+    $reviewerComment = $_POST['ReviewerComment'];
+
+    if (!isset($reviewerComment) && empty($reviewerComment)) {
+        $reviewerComment="";
+    }
+
+
     $scorecard = array(
         "WID" => $workID,
         "ReviewerID" => $reviewerID,
@@ -134,10 +141,15 @@ if (isset($_GET['listAssignments'])) {
     // and update CanReview status on Assignment table
     if (DBReviewer::saveScorecard($scorecard)) {
 
-        // current date
+        //set time zone to Denver and then get current date
+        date_default_timezone_set("America/Denver");
         $today = date("Ymd");
-        DBReviewer::saveReview(new Review((int)$workID, (int)$reviewerID, $today, $totalScore, ""));
 
+        // save the completed review to review history
+        DBReviewer::saveReview(new Review((int)$workID, (int)$reviewerID, $today, $totalScore, $reviewerComment));
+
+
+        // update canReview column of reviewer's assignment to zero, so reviewer cannot score the work again after submitting review
         DB::execute("UPDATE peer_review_db.Assignment SET CanReview=0 WHERE ReviewerID=$reviewerID AND WorkID=$workID");
 
     }
@@ -154,7 +166,6 @@ if (isset($_GET['listAssignments'])) {
 //            ........
 //    ]
 } elseif (isset($_GET['reviewHistory'])) {
-//    echo "\nreviewHistory\n";
     if (isset($_GET['ReviewerID'])) {
         $reviewerID = $_GET['ReviewerID'];
 
@@ -201,7 +212,6 @@ if (isset($_GET['listAssignments'])) {
 //  saves reviewer's review in the db
 } elseif (isset($_POST['saveReview'])) {
 
-    echo "\nSave request\n";
     $workID = $_POST['WorkID'];
     $reviewerID = $_POST['ReviewerID'];
     $dateReviewed = $_POST['DateReviewed'];
@@ -237,5 +247,47 @@ if (isset($_GET['listAssignments'])) {
 
     }
 }
+// receives http get request with params: getScorecardComment, ReviewerID, WorkID
+// responds back with comment made by the reviewer on his/her scorecard
+// JSON : [
+//    {
+//        "WorkID": "4",
+//        "ReviewerID": "1",
+//        "ReviewerName": "Melissa Klein",
+//        "Message": "great article",
+//        "DTime": "2019-11-13 07:00:00"
+//    },
+//    {
+//        "WorkID": "4",
+//        "ReviewerID": "2",
+//        "ReviewerName": "Anton Swartz",
+//        "Message": "Yes, it is. But I found some typos",
+//        "DTime": "2019-11-13 07:01:00"
+//    },
+//        ............................
+else if (isset($_GET['getScorecardComment'])) {
+
+    $workID = $_GET['WorkID'];
+    $reviewerID = $_GET['ReviewerID'];
+
+    $query = "SELECT ReviewerComment FROM peer_review_db.Reviews_History WHERE WorkID =$workID AND ReviewerID=$reviewerID;";
+
+    $reviewerComment = DB::select($query);
+
+    echo json_encode($reviewerComment);
+
+}
+else if (isset($_GET['getAllReviewersComments'])) {
+
+    $workID = $_GET['WorkID'];
+
+    $query = "SELECT ReviewerComment FROM peer_review_db.Reviews_History where WorkID=$workID;";
+    $reviewerComment = DB::select($query);
+
+    echo json_encode($reviewerComment);
+
+}
+
+
 
 ?>

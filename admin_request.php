@@ -11,6 +11,13 @@ require_once "db/DBReviewer.php";
 require_once "db/DBAdmin.php";
 require_once "db/DBReviewer.php";
 require_once "db/DB.php";
+require_once 'Utils/mail.php';
+
+
+
+// report all occured error messages to the screen
+//ini_set('display_errors', 1);
+//error_reporting(E_ALL);
 
 
 // receives http get request with params: incommingWorks
@@ -82,7 +89,6 @@ if (isset($_GET['incommingWorks'])) {
 //    },
 //    ...........................
 } elseif (isset($_GET['reviewerList'])) {
-    echo "\nreviewerListRequest\n";
 
     $reviewers = DB::select('SELECT * FROM peer_review_db.ReviewersListView;');
     echo json_encode($reviewers);
@@ -206,7 +212,6 @@ if (isset($_GET['incommingWorks'])) {
 //    },
 //    .................................
 } elseif (isset($_GET['unassignedWorks'])) {
-//    echo "\nunassignedWorksRequest\n";
 
     $works = DB::select('SELECT * FROM peer_review_db.Work WHERE Status="admitted";');
     echo json_encode($works);
@@ -215,13 +220,21 @@ if (isset($_GET['incommingWorks'])) {
 // responds back a list of reviewers along with total of their reviews for current month
 // JSON:    [
 //    {
-//        "ReviewerID": "1",
-//        "ReviewerName": "Melissa Klein",
-//        "ReviewedThisMonth": "4"
+//        "ReviewerID": "3",
+//        "ReviewerName": "reviewer3 Name",
+//        "Credential": "Academic",
+//        "Role": "Reviewer",
+//        "IsActive": "1",
+//        "Email": "kradylov@gmail.com",
+//        "WorkID": "4",
+//        "AssignedThisMonth": "0",
+//        "ReviewedThisMonth": "0",
+//        "TotalReviews": "4"
 //    },
 //         .....................
+//
+//    ]
 } elseif (isset($_GET['reviewersToAssign'])) {
-//    echo "\nreviewHistoryRequest\n";
 
     $workID = $_GET['workID'];
 
@@ -231,14 +244,19 @@ if (isset($_GET['incommingWorks'])) {
     echo json_encode($reviewers);
 
 // recieve http get request with params: getAssignedWorks
-// responds back with a list of assigned works in JSON:
+// responds back with a list of assigned works in JSON. Sample output is below:
 //  [
-//    {
-//        "AdminID": "1",
-//        "ReviewerID": "1",
-//        "WorkID": "4",
-//        "DateAssigned": "2019-11-12",
-//        "DueDate": "2019-11-14"
+//      {
+//        "WID": "35",
+//        "Title": "Prevalence of Articles With Honorary Authors and Ghost Authors in Peer-Reviewed Medical Journals",
+//        "URL": "https://jamanetwork.com/journals/jama/article-abstract/187772",
+//        "AuthorName": "Annette Flanagin, RN, MA; Lisa A. Carey, PhD;",
+//        "Status": "assigned",
+//        "ReviewerID": "66",
+//        "ReviewerName": "Mell Gibson",
+//        "Role": "Reviewer",
+//        "DateAssigned": "2020-03-18",
+//        "DueDate": "2020-03-23"
 //    },
 //    ......................
 } elseif (isset($_GET['getAssignedWorks'])) {
@@ -285,7 +303,30 @@ if (isset($_GET['incommingWorks'])) {
     $dueDate = $_POST['dueDate'];
     $dateAssigned = $_POST['dateAssigned'];
     $assignment = new Assignment($adminID, $reviewerID, $workID, $dateAssigned, $dueDate);
-    DBAdmin::createNewAssignment($assignment);
+
+
+    // notify newly assigned reviewer about new assignment via email
+    // after the assignment was successfully stored in the database
+    if(DBAdmin::createNewAssignment($assignment)){
+        $prsEmail = 'prs.prs2020@gmail.com';
+
+        $query = "SELECT RName, Email FROM peer_review_db.Reviewer WHERE RID=".$reviewerID.";";
+        $reviewer = DB::select($query);
+
+        $email = new Email();
+        $email->setRecepientName($reviewer[0]['RName']);
+        $email->setRecepientEmail($reviewer[0]['Email']);
+
+        $email->setSenderName('no-reply');
+        $email->setSenderEmail($prsEmail);
+        $email->setSubject('PRS: New Assignment');
+        $email->setMessage(getNotificationForReviewerTemplate($dueDate));
+        $email->setReply(0);
+
+        sendEmail($email);
+
+    }
+
 
 } elseif (isset($_GET['getUsers'])) {
 //    echo "\ngetUsers\n";
@@ -331,8 +372,23 @@ if (isset($_GET['incommingWorks'])) {
         echo json_encode(DB::select("SELECT * FROM peer_review_db.AdminReviewsView"));
 
     }
-
-
 }
+elseif (isset($_POST['sendThreshold'])) {
+
+    $threshold = $_POST['sendThreshold'];
+
+    // UPDATE peer_review_db.Threshold SET Threshold=66 where ID=1
+    $query = "UPDATE peer_review_db.Threshold SET Threshold=".$threshold." WHERE ID=1;";
+    DB::execute($query);
+}
+
+elseif (isset($_GET['getThreshold'])) {
+
+    $query = "SELECT Threshold FROM peer_review_db.Threshold;";
+    $threshold = DB::select($query);
+
+    echo json_encode($threshold);
+}
+
 
 ?>

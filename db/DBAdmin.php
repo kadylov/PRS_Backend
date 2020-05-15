@@ -54,7 +54,8 @@ class DBAdmin {
         $email = $newAdmin->getEmail();
 
         if ($credential == 0 || $roleType == 0) {
-            die("\nError, credential or roleId cannot be zero\n");
+            sendHttpResponseMsg(404, 'Error, credential or roleId cannot be zero');
+
         }
 
         //AID, Username, Password, AName, CredentialID, RoleId, Email
@@ -65,8 +66,12 @@ class DBAdmin {
 
         $stmt->bind_param("ssssss", $username, $password, $name, $credential, $roleType, $email);
         if (!$stmt->execute()) {
+            // close statement
+            $stmt->close();
+
+            // close connection
+            $conn->close();
             sendHttpResponseMsg(404, 'Unable to create an admin');
-//            die($stmt->error);
         }
 
         sendHttpResponseMsg(202, 'Admin has been created successfully.');
@@ -99,7 +104,6 @@ class DBAdmin {
             $query = "UPDATE peer_review_db.Admin SET Username=?, Password=?, AName=?, CredentialID=?, RoleId=?, Email=?, IsActive=? WHERE AID=?;";
         } else {
             sendHttpResponseMsg(404, 'User was not found for update');
-//            responseWithError("User was not found for update", 406);
         }
 
         $conn = connect();
@@ -129,17 +133,18 @@ class DBAdmin {
     public static function deleteReviewerByID($id) {
 
         if ($id == 0 || $id === null) {
-            die("\nError! Reviewer.class ID cannot be zero\n");
+            sendHttpResponseMsg(404, 'Reviewer ID cannot be zero');
+
         }
 
         $sql = "DELETE FROM peer_review_db.Reviewer WHERE RID=$id";
 
         $conn = connect();
         if ($conn->query($sql) === true) {
-            json_encode("Reviewer.class was deleted successfully.");
+            sendHttpResponseMsg(200, 'Reviewer.class was deleted successfully.');
+
         } else {
-            http_response_code(409);
-            json_encode("ERROR: Could not able to execute $sql. ".$conn->error);
+            sendHttpResponseMsg(404, 'ERROR: Could not able to execute $sql. ".$conn->error');
 
         }
 
@@ -149,7 +154,7 @@ class DBAdmin {
 
     public static function getAdminReviewsByID($adminID) {
         if ($adminID == 0 || $adminID === null) {
-            die("Error! admin ID cannot be zero or null");
+            sendHttpResponseMsg(404, 'Error! admin ID cannot be zero or null');
         }
 
         $conn = connect();
@@ -157,7 +162,8 @@ class DBAdmin {
 
         $reviews = array();
         if (!$result) {
-            printf("Errormessage: %s\n", $conn->error);
+            sendHttpResponseMsg(404, 'Error'. $conn->error);
+
         } elseif ($result->num_rows > 0) {
             $reviews = $result->fetch_all(MYSQLI_ASSOC);
         } else {
@@ -208,7 +214,7 @@ class DBAdmin {
 
         $stmt->bind_param("ss", $decision, $workID);
         if (!$stmt->execute()) {
-            die($stmt->error);
+            sendHttpResponseMsg(404, 'Error'. $stmt->error);
         }
 
         // close statement
@@ -217,15 +223,12 @@ class DBAdmin {
         // close connection
         $conn->close();
 
-//        echo "Records updated successfully.";
-
-//        http_response_code(202);
     }
 
 
+    // store new reviewer assignment to the database
     public static function createNewAssignment(Assignment $assignment) {
 
-//        echo $assignment;
         $adminID = $assignment->getAdminID();
         $reviewerID = $assignment->getReviewerID();
         $workID = $assignment->getWorkID();
@@ -241,36 +244,36 @@ class DBAdmin {
 
         $stmt->bind_param("ssssss", $adminID, $reviewerID, $workID, $dateAssigned, $dueDate, $canReviewStatus);
         if (!$stmt->execute()) {
-            die($stmt->error);
+            sendHttpResponseMsg(404, 'Error'. $stmt->error);
         }
-
-//        echo "Records inserted successfully.";
 
         // close statement
         $stmt->close();
 
         // close connection
         $conn->close();
+
+        return true;
     }
 
+    // deactivate reviewer whose review was over due
     public static function deactivateFromAssignment($reviewerID, $workID) {
         if ($reviewerID === null) {
-            die("\nError! Reviewer.class ID cannot be null\n");
+            sendHttpResponseMsg(404, 'Error! Reviewer.class ID cannot be null');
         }
 
         if ($workID === null) {
-            die("\nError! Reviewer.class ID cannot be null\n");
+            sendHttpResponseMsg(404, 'Error! Reviewer.class ID cannot be null');
         }
 
         $sql = "UPDATE  peer_review_db.Assignment SET CanReview=0 WHERE ReviewerID=$reviewerID AND WorkID=$workID";
         $conn = connect();
 
         if ($conn->query($sql) === true) {
-            json_encode(array("message" => "Reviewer.class was deleted successfully."));
-            http_response_code(200);
+            sendHttpResponseMsg(200, 'Reviewer has been successfully removed from the assignment');
 
         } else {
-            responseWithError("ERROR: Could not able to execute".$sql." ".$conn->error);
+            sendHttpResponseMsg(404,"ERROR: Could not able to execute".$sql." ".$conn->error);
         }
 
         $conn->close();

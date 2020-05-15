@@ -5,9 +5,11 @@ require_once 'Utils/util.php';
 require_once 'Utils/mail.php';
 
 
+// this php file is responsible to receive a group of assigned reviewers for incoming work
+
 // responsible for receiving a list of reviewers in json
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//error_reporting(E_ALL);
 
 $contentType = explode(';', $_SERVER['CONTENT_TYPE']);
 

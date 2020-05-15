@@ -12,6 +12,9 @@ require_once 'db/DB.php';
 //error_reporting(E_ALL);
 
 
+// this php script is responsible for collecting and submitting all reviewers scorecards for each reviewed works
+// it is used for generating review summary
+
 // Check if the form was submitted
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
@@ -22,7 +25,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $query = "SELECT WID, Title, URL, Status, AuthorName FROM peer_review_db.ScorecardView WHERE Status='scored' GROUP BY WID";
 
 
-        if (isset($_GET['WID']) && !empty($_GET['WID'])) {
+        // modify query if the work status was passed from client side
+        // this statement is true if the http request coming form lead reviewer summary page
+        if (isset($_GET['Status']) && !empty($_GET['Status']) && isset($_GET['WID']) && !empty($_GET['WID'])) {
+            $status = $_GET['Status'];
+            $query = "SELECT WID, Title, URL, Status, AuthorName FROM peer_review_db.ScorecardView WHERE Status='".$status."' GROUP BY WID";
+
+        }
+
+        else if (isset($_GET['WID']) && !empty($_GET['WID'])) {
 
             $query = "SELECT WID, Title, URL, Status, AuthorName FROM peer_review_db.ScorecardView WHERE WID =".$_GET['WID']." GROUP BY WID";
         }
@@ -37,10 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
         if ($result->num_rows > 0) {
 
-            // loop thorugh each work and collect reviewers scorecards
+            // loop through each work and collect reviewers info and their scores from their scorecards
             while ($work = $result->fetch_assoc()) {
-
-
 
                 $work['Scorecards'] = array();
 
@@ -51,7 +60,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
 
                     // loop through each reviewer and get his/her scores for the scorecard
                     while ($reviewer = $reviewers->fetch_assoc()) {
-                        $rubricQuery = "SELECT RubricID, RubricText, Score FROM peer_review_db.ScorecardView where WID=".$work['WID']." and ReviewerID=".$reviewer['ReviewerID'].";";
+//                        $rubricQuery = "SELECT RubricID, RubricText, Score FROM peer_review_db.ScorecardView where WID=".$work['WID']." and ReviewerID=".$reviewer['ReviewerID'].";";
+                        $rubricQuery = "SELECT RubricID, Score FROM peer_review_db.ScorecardView where WID=".$work['WID']." and ReviewerID=".$reviewer['ReviewerID'].";";
 
 
                         $result2 = $conn->query($rubricQuery);

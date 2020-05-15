@@ -8,7 +8,7 @@ require_once "db/DB.php";
 require_once "db/DBWork.php";
 
 require_once 'Utils/mail.php';
-
+require_once 'Utils/util.php';
 
 if (isset($_POST['postNewWork'])) {
 
@@ -76,6 +76,8 @@ if (isset($_POST['postNewWork'])) {
 
     DBWork::publishWork($wid, $status);
 
+
+// get admin request to update work status after admin makes a final decision on the completed review page in Angular
 } else if (isset($_POST['updateWorkStatus'])) {
 
     $wid = $_POST['WID'];
@@ -83,5 +85,50 @@ if (isset($_POST['postNewWork'])) {
 
     DBWork::updateWorkStatus($wid, $status);
 
+    if ($status == 'completed' || $status == 'rejected') {
+        sendWorkSummary($wid);
+    }
+
+
 }
+
+// email the summary to the author
+function sendWorkSummary($wid) {
+    $query = "SELECT * FROM peer_review_db.SummaryView where WorkID=".$wid.";";
+
+    $conn = connect();
+
+    // WorkID, Title, AuthorName, AuthorEmail, Status, WorkFinalScore, SummaryText
+    $result = $conn->query($query);
+    if (!$result)
+        sendHttpResponseMsg(404, "\nError in getting author email:".$conn->error);
+
+    elseif ($result->num_rows > 0) {
+
+        $prsEmail = 'prs.prs2020@gmail.com';
+
+        $summary = $result->fetch_assoc();
+
+        // RName, Email, DueDate, WorkID
+        $email = new Email();
+        $email->setRecepientName('Author');
+        $email->setRecepientEmail($summary['AuthorEmail']);
+
+        $email->setSenderName('no-reply');
+        $email->setSenderEmail($prsEmail);
+        $email->setSubject('PRS: Work Summary');
+        $email->setMessage(getWorkSummaryTemplate($summary));
+        $email->setReply(0);
+
+        sendEmail($email);
+
+
+    }
+
+
+
+    $conn->close();
+
+}
+
 ?>

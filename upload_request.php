@@ -50,7 +50,7 @@ function restoreDataInDB($backup_fname) {
 
     $old_path = getcwd();
     chdir(dirname(__FILE__).'/backup/');
-    $output = shell_exec('./upload.sh');
+    $output = shell_exec('./upload.sh > > /dev/null 2>&1');
     chdir($old_path);
 
 }
